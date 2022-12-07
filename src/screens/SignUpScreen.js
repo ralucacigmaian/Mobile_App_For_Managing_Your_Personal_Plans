@@ -1,11 +1,10 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Button } from 'react-native';
-// import TextInput from "react-native-text-input-interactive";
 import { EvilIcons } from '@expo/vector-icons';
 import { colors } from '../utils/colors';
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View>
@@ -15,7 +14,7 @@ const SignUpScreen = () => {
                         <EvilIcons name="close" size={30} color="gray"/>
                     </TouchableOpacity>
                     <Text style={styles.textSignUp}>Sign Up</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
                         <Text style={styles.textSignIn}>Sign In</Text>
                     </TouchableOpacity>
                 </View>
@@ -68,9 +67,6 @@ const SignUpScreen = () => {
                             <Text style={styles.textButton}>Sign Up</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity>
-                        <Text style={styles.textPassword}>Forgot your password?</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>
@@ -135,11 +131,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
     },
-    textPassword: {
-        color: colors.lightGray4,
-        fontSize: 16,
-        textDecorationLine: 'underline'
-    }
 });
 
 export default SignUpScreen;    
