@@ -1,10 +1,50 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert, Button } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors } from '../utils/colors';
+import { firebase } from '../firebase/config'
 
 const SignUpScreen = ({navigation}) => {
+    const [user, setUser] = useState({ 
+        displayName: '',
+        email: '', 
+        password: '',
+        phoneNumber:''
+      });
+
+
+    const registerUser = () => {
+        if(user.email === '' && user.password === '') {
+          Alert.alert('Enter details to sign up!')
+        } else {
+          console.log(user);
+        firebase
+        .auth()
+          .createUserWithEmailAndPassword(user.email, user.password)
+          .then((res) => {
+            res.user.updateProfile({
+              displayName: user.displayName,
+              phoneNumber: user.phoneNumber
+            })
+            console.log('User registered successfully!')
+            user.setUser({
+              displayName: '',
+              email: '', 
+              password: '',
+              phoneNumber:''
+            })
+            navigation.navigate('SignIn')
+          })
+          .catch(error => setUser({ errorMessage: error.message }))      
+        }
+    }
+    
+
+
+
+
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View>
@@ -25,6 +65,8 @@ const SignUpScreen = ({navigation}) => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        value={user.displayName}
+                        onChangeText={(text) => setUser({...user, displayName: text})}
                     />
                     <TextInput 
                         placeholder='Email'
@@ -34,6 +76,8 @@ const SignUpScreen = ({navigation}) => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        value={user.email}
+                        onChangeText={(text) => setUser({...user, email: text})}
                     />
                     <TextInput 
                         placeholder='Phone Number'
@@ -42,6 +86,8 @@ const SignUpScreen = ({navigation}) => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        value={user.phoneNumber}
+                        onChangeText={(text) => setUser({...user, phoneNumber: text})}
                     />
                     <TextInput 
                         placeholder='Password'
@@ -50,6 +96,8 @@ const SignUpScreen = ({navigation}) => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        value={user.password}
+                        onChangeText={(text) => setUser({...user, password: text})}
                     />
                     <TextInput 
                         placeholder='Confirm password'
@@ -63,7 +111,7 @@ const SignUpScreen = ({navigation}) => {
                         <Image source={require('../utils/signupScreenImage.png')} style={styles.image}/>
                     </View>
                     <View style={styles.containerButton}>
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity onPress={() => registerUser()} style={styles.button}>
                             <Text style={styles.textButton}>Sign Up</Text>
                         </TouchableOpacity>
                     </View>
