@@ -6,45 +6,60 @@ import { colors } from '../utils/colors';
 import { firebase } from '../firebase/config'
 
 const SignUpScreen = ({navigation}) => {
-    const [user, setUser] = useState({ 
-        displayName: '',
-        email: '', 
-        password: '',
-        phoneNumber:''
-      });
+  const [user, setUser] = useState({ 
+    displayName: '',
+    email: '', 
+    password: '',
+    phoneNumber:'',
+    confirmPassword: ''
+  });
 
+  const [error, setError] = useState('');
 
-    const registerUser = () => {
-        if(user.email === '' && user.password === '') {
-          Alert.alert('Enter details to sign up!')
-        } else {
-          console.log(user);
-        firebase
-        .auth()
-          .createUserWithEmailAndPassword(user.email, user.password)
+  const registerUser = () => {
+    //verifying inputs
+    let ok = 1;
+    let errorMessage = ''
+    if (user.displayName === ''){ ok = 0; errorMessage = 'Please enter your name!'}
+    if (user.phoneNumber === ''){ ok = 0; errorMessage = 'Please enter your phone number!'}
+    if (user.confirmPassword === '') { ok = 0; errorMessage = 'Please enter confirm password!'}
+    if (user.password != user.confirmPassword) {ok = 0; errorMessage = 'Password and confirm password do not match!'}
+    if(user.email === '' && user.password === '') {
+      ok = 0;
+      Alert.alert('Enter details to sign up!')
+    } 
+
+    if (ok === 0){
+      setError(errorMessage);
+    }
+    if (ok ===1){
+      console.log(user);
+      firebase
+      .auth()
+        .createUserWithEmailAndPassword(user.email, user.password)
           .then((res) => {
             res.user.updateProfile({
               displayName: user.displayName,
               phoneNumber: user.phoneNumber
             })
+
             console.log('User registered successfully!')
-            user.setUser({
+                
+            setUser({
               displayName: '',
               email: '', 
               password: '',
-              phoneNumber:''
+              phoneNumber:'',
+              confirmPassword: ''
             })
+            setError('');
             navigation.navigate('SignIn')
           })
-          .catch(error => setUser({ errorMessage: error.message }))      
-        }
+          .catch(err => setError(err.message)) 
+        console.log(error)     
     }
-    
-
-
-
-
-
+        
+  }
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View>
@@ -106,7 +121,10 @@ const SignUpScreen = ({navigation}) => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        value={user.confirmPassword}
+                        onChangeText={(text) => setUser({...user, confirmPassword: text})}
                     />
+                      <Text style={styles.errorText}>{error}</Text>
                     <View style={styles.containerImage}>
                         <Image source={require('../utils/signupScreenImage.png')} style={styles.image}/>
                     </View>
@@ -134,6 +152,10 @@ const styles = StyleSheet.create({
     },
     textSignIn: {
         fontSize: 19,
+        color: colors.red,
+    },
+    errorText: {
+        fontSize: 15,
         color: colors.red,
     },
     container: {
