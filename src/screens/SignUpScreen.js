@@ -66,7 +66,7 @@ const SignUpScreen = ({navigation}) => {
                 <StatusBar/>
                 <View style={styles.header}>
                     <TouchableOpacity>
-                        <EvilIcons name="close" size={30} color="gray"/>
+                        <EvilIcons name="close" size={30} color="gray" onPress={() => navigation.navigate('SignIn')}/>
                     </TouchableOpacity>
                     <Text style={styles.textSignUp}>Sign Up</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
