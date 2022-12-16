@@ -7,7 +7,7 @@ const navigator = createStackNavigator({
   SignUp: SignUpScreen,
   SignIn: SignInScreen,
 }, {
-  initialRouteName: 'SignUp',
+  initialRouteName: 'SignIn',
   defaultNavigationOptions : {
     title: 'My App',
     header: null

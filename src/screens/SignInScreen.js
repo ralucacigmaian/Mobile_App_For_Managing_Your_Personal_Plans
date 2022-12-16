@@ -1,9 +1,23 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, TouchableOpacity } from 'react-native';
 import { colors } from '../utils/colors';
-
+import { firebase } from '../firebase/config'
 const SignInScreen = ({navigation}) => {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const handleLogin = () => {
+        firebase.
+        auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('Logged in with:', user.email);
+          })
+          .catch(error => alert(error.message))
+      }
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View style={styles.container}>
@@ -16,10 +30,12 @@ const SignInScreen = ({navigation}) => {
                 </View>
                 <View style={styles.containerTextInput}>
                     <TextInput 
-                            placeholder='Name'
-                            textContentType='name'
+                            placeholder='Email'
+                            textContentType='emailAddress'
                             placeholderTextColor={colors.lightGray3}
                             selectionColor='black'
+                            value={email}
+                            onChangeText={text => setEmail(text)}
                             style={styles.textInput}
                     />
                     <TextInput 
@@ -28,11 +44,16 @@ const SignInScreen = ({navigation}) => {
                         secureTextEntry={true}
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
+                        value={password}
+                        onChangeText={text => setPassword(text)}
                         style={styles.textInput}
                     />
                 </View>
                 <View style={styles.containerButton}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity 
+                        onPress={handleLogin}
+                        style={styles.button}
+                        >
                         <Text style={styles.textButton}>Sign In</Text>
                     </TouchableOpacity>
                 </View>
