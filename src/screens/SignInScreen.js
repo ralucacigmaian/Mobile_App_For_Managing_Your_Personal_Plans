@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, TouchableOpacity } from 'react-native';
 import { colors } from '../utils/colors';
 import { firebase } from '../firebase/config'
+
 const SignInScreen = ({navigation}) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -18,6 +19,16 @@ const SignInScreen = ({navigation}) => {
           .catch(error => alert(error.message))
       }
 
+    useEffect(() => {
+        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            navigation.navigate('Home')
+          }
+        })
+    
+        return unsubscribe
+      }, [])
+    
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View style={styles.container}>
