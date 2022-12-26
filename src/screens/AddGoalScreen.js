@@ -1,11 +1,24 @@
-import React from 'react';
+import {React, useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import { colors } from '../utils/colors';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-
+import { firebase } from '../firebase/config'
 const AddGoalScreen = () => {
+    const [goal, setGoal] = useState({ 
+        title: 'My goal',
+        type: 'Day', 
+        date: '25/12/2022',
+        time:'17:03pm',
+        reminder:0, //0 or 1
+        category:'idk',
+        description: 'idk'
+      });
+    
+    const handleAddGoal = () =>{
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
+    }
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View>

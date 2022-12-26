@@ -4,8 +4,6 @@ import { colors } from '../utils/colors';
 import { firebase } from '../firebase/config'
 
 const HomeScreen = ({navigation}) => {
-    
-  
     const handleSignOut = () => {
       firebase
       .auth()
@@ -19,6 +17,9 @@ const HomeScreen = ({navigation}) => {
     return (
       <View style={styles.container}>
         <Text>Email: {firebase.auth().currentUser?.email}</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddGoal')}>
+          <Text style={styles.buttonText}>Add goal</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={handleSignOut}
           style={styles.button}
