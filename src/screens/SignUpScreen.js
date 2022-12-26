@@ -1,6 +1,8 @@
-import React,{useState} from 'react';
+import React, {useState, useRef} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert, Button, Platform } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors } from '../utils/colors';
 import { firebase } from '../firebase/config'
@@ -60,9 +62,14 @@ const SignUpScreen = ({navigation}) => {
     }
         
   }
+
+  const ref_input2 = useRef()
+  const ref_input3 = useRef()
+  const ref_input4 = useRef()
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-            <View>
+            <KeyboardAwareScrollView style={styles.containerScreen}>
                 <StatusBar/>
                 <View style={styles.header}>
                     <TouchableOpacity>
@@ -82,6 +89,9 @@ const SignUpScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={user.displayName}
                         onChangeText={(text) => setUser({...user, displayName: text})}
+                        autoFocus={true}
+                        returnKeyType="next"
+                        onSubmitEditing={() => ref_input2.current.focus()}
                     />
                     <TextInput 
                         placeholder='Email'
@@ -93,6 +103,10 @@ const SignUpScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={user.email}
                         onChangeText={(text) => setUser({...user, email: text})}
+                        ref={ref_input2}
+                        autoFocus={false}
+                        returnKeyType="next"
+                        onSubmitEditing={() => ref_input3.current.focus()}
                     />
                     <TextInput 
                         placeholder='Phone Number'
@@ -103,6 +117,7 @@ const SignUpScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={user.phoneNumber}
                         onChangeText={(text) => setUser({...user, phoneNumber: text})}
+                        ref={ref_input3}
                     />
                     <TextInput 
                         placeholder='Password'
@@ -113,6 +128,9 @@ const SignUpScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={user.password}
                         onChangeText={(text) => setUser({...user, password: text})}
+                        autoFocus={false}
+                        returnKeyType="next"
+                        onSubmitEditing={() => ref_input4.current.focus()}
                     />
                     <TextInput 
                         placeholder='Confirm password'
@@ -123,6 +141,7 @@ const SignUpScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={user.confirmPassword}
                         onChangeText={(text) => setUser({...user, confirmPassword: text})}
+                        ref={ref_input4}
                     />
                       <Text style={styles.errorText}>{error}</Text>
                     <View style={styles.containerImage}>
@@ -134,12 +153,16 @@ const SignUpScreen = ({navigation}) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 };
 
 const styles = StyleSheet.create({
+    containerScreen: {
+        height: hp('100%'),
+        width: wp('100%'),
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -184,7 +207,7 @@ const styles = StyleSheet.create({
         height: 152,
     },
     containerButton: {
-        paddingVertical: 40,
+        paddingVertical: Platform.OS === 'android' ? 20 : 40,
     },
     button: {
         height: 50,
