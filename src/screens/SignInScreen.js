@@ -1,26 +1,62 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
+import { firebase } from '../firebase/config'
 
 const SignInScreen = ({navigation}) => {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const ref_input2 = useRef()
+
+    const handleLogin = () => {
+        firebase.
+        auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('Logged in with:', user.email);
+          })
+          .catch(error => alert(error.message))
+      }
+
+    useEffect(() => {
+        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            navigation.navigate('Home')
+          }
+        })
+    
+        return unsubscribe
+      }, [])
+      
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-            <View style={styles.container}>
-                <StatusBar/>
-                <Text style={styles.text1}>Plan your</Text>
-                <Text style={styles.text2}>Daily</Text>
-                <Text style={styles.text3}>Goals</Text>
-                <View style={styles.imageContainer}>
-                    <Image source={require('../utils/signinScreenImage.jpg')} style={styles.image}/>
+            <KeyboardAwareScrollView style={styles.container}>
+                <View style={styles.header}>
+                    <StatusBar/>
+                    <Text style={styles.text1}>Plan your</Text>
+                    <Text style={styles.text2}>Daily</Text>
+                    <Text style={styles.text3}>Goals</Text>
+                    <View style={styles.imageContainer}>
+                        <Image source={require('../utils/signinScreenImage.jpg')} style={styles.image}/>
+                    </View>
                 </View>
                 <View style={styles.containerTextInput}>
                     <TextInput 
-                            placeholder='Name'
-                            textContentType='name'
+                            placeholder='Email'
+                            textContentType='emailAddress'
                             placeholderTextColor={colors.lightGray3}
                             selectionColor='black'
+                            value={email}
+                            onChangeText={text => setEmail(text)}
                             style={styles.textInput}
+                            autoFocus={true}
+                            returnKeyType="next"
+                            onSubmitEditing={() => ref_input2.current.focus()}
                     />
                     <TextInput 
                         placeholder='Password'
@@ -28,11 +64,17 @@ const SignInScreen = ({navigation}) => {
                         secureTextEntry={true}
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
+                        value={password}
+                        onChangeText={text => setPassword(text)}
                         style={styles.textInput}
+                        ref={ref_input2}
                     />
                 </View>
                 <View style={styles.containerButton}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity 
+                        onPress={handleLogin}
+                        style={styles.button}
+                        >
                         <Text style={styles.textButton}>Sign In</Text>
                     </TouchableOpacity>
                 </View>
@@ -44,7 +86,7 @@ const SignInScreen = ({navigation}) => {
                         <Text style={styles.textFooter}>Forgot your password?</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 }
@@ -53,6 +95,11 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 10,
         paddingVertical: 20,
+        width: wp('100%'),
+        height: hp('100%')
+    },
+    header: {
+        height: Platform.OS === 'android' ? hp('52.5%') : hp('49%')
     },
     text1: {
         fontSize: 20,
@@ -93,8 +140,8 @@ const styles = StyleSheet.create({
         marginBottom: 16
     },
     containerButton: {
-        paddingVertical: 40,
-        alignItems: 'center'
+        paddingVertical: Platform.OS === 'android' ? 20 : 40,
+        alignItems: 'center',
     },
     button: {
         height: 50,
@@ -115,7 +162,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingTop: 20,
-        paddingHorizontal: 25
+        paddingHorizontal: 25,
     },
     textFooter: {
         color: colors.lightGray4,
