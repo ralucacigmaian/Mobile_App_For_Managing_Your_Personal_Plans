@@ -7,12 +7,12 @@ import HomeScreen from "./src/screens/HomeScreen";
 const navigator = createStackNavigator({
   SignUp: SignUpScreen,
   SignIn: SignInScreen,
-  Home:HomeScreen
+  Home:HomeScreen,
 }, {
   initialRouteName: 'SignIn',
   defaultNavigationOptions : {
     title: 'My App',
-    header: null
+    headerShown: false
   }
 });
 
