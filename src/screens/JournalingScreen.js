@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
 import JournalEntry from '../components/JournalEntry';
+import Footer from '../components/Footer';
 
 const JournalingScreen = () => {
     return (
@@ -35,6 +36,7 @@ const JournalingScreen = () => {
                     </View>
                 </View>
             </KeyboardAwareScrollView>
+            <Footer />
         </SafeAreaView>
     )
 }
