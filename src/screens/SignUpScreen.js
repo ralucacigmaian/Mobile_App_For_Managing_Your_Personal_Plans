@@ -41,27 +41,27 @@ const SignUpScreen = ({navigation}) => {
         .createUserWithEmailAndPassword(user.email, user.password)
           .then((res) => {
             res.user.updateProfile({
-              displayName: user.displayName,
-              phoneNumber: user.phoneNumber
+                displayName: user.displayName,
+                phoneNumber: user.phoneNumber
+              })
+  
+              console.log('User registered successfully!')
+                  
+              setUser({
+                displayName: '',
+                email: '', 
+                password: '',
+                phoneNumber:'',
+                confirmPassword: ''
+              })
+              setError('');
+              navigation.navigate('SignIn')
             })
-
-            console.log('User registered successfully!')
-                
-            setUser({
-              displayName: '',
-              email: '', 
-              password: '',
-              phoneNumber:'',
-              confirmPassword: ''
-            })
-            setError('');
-            navigation.navigate('SignIn')
-          })
-          .catch(err => setError(err.message)) 
-        console.log(error)     
+            .catch(err => setError(err.message)) 
+          console.log(error)     
+      }
+          
     }
-        
-  }
 
   const ref_input2 = useRef()
   const ref_input3 = useRef()
