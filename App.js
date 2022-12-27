@@ -11,7 +11,7 @@ const navigator = createStackNavigator({
   Home:HomeScreen,
   AddGoal: AddGoalScreen
 }, {
-  initialRouteName: 'SignUp',
+  initialRouteName: 'SignIn',
   defaultNavigationOptions : {
     title: 'My App',
     headerShown: false
