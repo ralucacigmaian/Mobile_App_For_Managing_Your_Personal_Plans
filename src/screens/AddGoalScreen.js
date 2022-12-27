@@ -1,14 +1,133 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Button, Platform } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Feather } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const AddGoalScreen = () => {
+
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    const [text, setText] = useState('Empty');
+    
+    const [selected, setSelected] = useState("");
+
+    const data = [
+        {key: '1', value: 'Category #1'},
+        {key: '2', value: 'Category #2'},
+    ]
+
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios');
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+        let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
+        if (mode === 'date') {
+            setText(fDate);
+        }
+        else {
+            setText(fTime);
+        }
+    }
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    }
+
+    const renderDate = () => {
+        if (Platform.OS === 'ios') {
+            return (
+                <View style={styles.containerPickDate}>
+                    <Feather name="calendar" size={30} color={colors.lightGray4} />
+                    <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display='compact'
+                        onChange={onChange}
+                        accentColor={colors.lightGray4}
+                        themeVariant="light"
+                    />
+                </View>
+            )
+        }
+        else {
+            return (
+                <View style={styles.containerPickDate}>
+                    <TouchableOpacity onPress={() => showMode('date')}>
+                        <Feather name="calendar" size={30} color={colors.lightGray4} />
+                    </TouchableOpacity>
+                    <Text style={styles.textDateAndroid}>{text}</Text>
+                    {show && (
+                        <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display='compact'
+                        onChange={onChange}
+                    />
+                    )}
+                </View>
+            )
+        }
+    }
+
+    const renderTime = () => {
+        if (Platform.OS === 'ios') {
+            return (
+                <View style={styles.containerPickDate}>
+                    <Feather name="clock" size={30} color={colors.lightGray4} />
+                    <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={date}
+                        is24Hour={true}
+                        display='compact'
+                        onChange={onChange}
+                        accentColor={colors.lightGray4}
+                        themeVariant="light"
+                    />
+                </View>
+            )
+        }
+        else {
+            return (
+                <View style={styles.containerPickDate}>
+                    <TouchableOpacity onPress={() => showMode('time')}>
+                        <Feather name="clock" size={30} color={colors.lightGray4} />
+                    </TouchableOpacity>
+                    <Text style={styles.textDateAndroid}>{text}</Text>
+                    {show && (
+                        <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display='compact'
+                        onChange={onChange}
+                    />
+                    )}
+                </View>
+            )
+        }
+    }
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-            <View>
+            <KeyboardAwareScrollView style={styles.containerScreen}>
                 <StatusBar/>
                 <View style={styles.header}>
                     <TouchableOpacity>
@@ -23,6 +142,7 @@ const AddGoalScreen = () => {
                         placeholderTextColor={colors.lightGray3}
                         selectionColor='black'
                         style={styles.textInput}
+                        autoFocus={true}
                     />
                     <View style={styles.containerText}>
                         <Text style={styles.textType}>Type</Text>
@@ -35,90 +155,63 @@ const AddGoalScreen = () => {
                         tintColor={colors.red}
                         color={colors.lightGray4}
                     />
-                    <Text style={styles.textDate}>Date</Text>
-                    <Calendar
-                    // Initially visible month. Default = now
-                    initialDate={'2012-03-01'}
-                    // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                    minDate={'2012-05-10'}
-                    // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
-                    maxDate={'2012-05-30'}
-                    // Handler which gets executed on day press. Default = undefined
-                    onDayPress={day => {
-                    console.log('selected day', day);
-                    }}
-                    // Handler which gets executed on day long press. Default = undefined
-                    onDayLongPress={day => {
-                    console.log('selected day', day);
-                    }}
-                    // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                    monthFormat={'yyyy MM'}
-                    // Handler which gets executed when visible month changes in calendar. Default = undefined
-                    onMonthChange={month => {
-                    console.log('month changed', month);
-                    }}
-                    // Hide month navigation arrows. Default = false
-                    hideArrows={true}
-                    // Replace default arrows with custom ones (direction can be 'left' or 'right')
-                    renderArrow={direction => <Arrow />}
-                    // Do not show days of other months in month page. Default = false
-                    hideExtraDays={true}
-                    // If hideArrows = false and hideExtraDays = false do not switch month when tapping on greyed out
-                    // day from another month that is visible in calendar page. Default = false
-                    disableMonthChange={true}
-                    // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday
-                    firstDay={1}
-                    // Hide day names. Default = false
-                    hideDayNames={true}
-                    // Show week numbers to the left. Default = false
-                    showWeekNumbers={true}
-                    // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-                    onPressArrowLeft={subtractMonth => subtractMonth()}
-                    // Handler which gets executed when press arrow icon right. It receive a callback can go next month
-                    onPressArrowRight={addMonth => addMonth()}
-                    // Disable left arrow. Default = false
-                    disableArrowLeft={true}
-                    // Disable right arrow. Default = false
-                    disableArrowRight={true}
-                    // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
-                    disableAllTouchEventsForDisabledDays={true}
-                    // Replace default month and year title with custom one. the function receive a date as parameter
-                    renderHeader={date => {
-                    /*Return JSX*/
-                    }}
-                    // Enable the option to swipe between months. Default = false
-                    enableSwipeMonths={true}
-                    theme={{
-                        backgroundColor: '#black',
-                        calendarBackground: '#ffffff',
-                        textSectionTitleColor: '#b6c1cd',
-                        textSectionTitleDisabledColor: '#d9e1e8',
-                        selectedDayBackgroundColor: '#00adf5',
-                        selectedDayTextColor: '#ffffff',
-                        todayTextColor: '#00adf5',
-                        dayTextColor: '#2d4150',
-                        textDisabledColor: '#d9e1e8',
-                        dotColor: '#00adf5',
-                        selectedDotColor: '#ffffff',
-                        arrowColor: 'orange',
-                        disabledArrowColor: '#d9e1e8',
-                        monthTextColor: 'blue',
-                        indicatorColor: 'blue',
-                        textDayFontWeight: '300',
-                        textMonthFontWeight: 'bold',
-                        textDayHeaderFontWeight: '300',
-                        textDayFontSize: 16,
-                        textMonthFontSize: 16,
-                        textDayHeaderFontSize: 16
-                      }}
+                </View>
+                <View style={styles.containerText}>
+                    <Text style={styles.textReminder}>Reminder</Text>
+                </View>
+                <View style={styles.containerSegmentedButton}>
+                    <SegmentedControl
+                        values={['Yes', 'No']}
+                        selectedIndex={1}
+                        tintColor={colors.red}
+                        color={colors.lightGray4}
                     />
                 </View>
-            </View>
+                <View style={styles.containerDatePicker}>
+                    <Text style={styles.textDate}>Date</Text>
+                    {renderDate()}
+                    <Text style={styles.textDate}>Time</Text>
+                    {renderTime()}
+                </View>
+                <View style={styles.containerCategory}>
+                    <Text style={styles.textCategory}>Category</Text>
+                    <SelectList
+                        setSelected={(value) => setSelected(value)}
+                        data={data}
+                        save="value"
+                        searchPlaceholder='Search Category...'
+                        placeholder='Select Category'
+                        arrowicon={<Feather name="arrow-down" size={20} color={colors.lightGray4} />}
+                        closeicon={<EvilIcons name="close" size={20} color={colors.lightGray4} />}
+                    />
+                </View>
+                <View style={styles.containerDescription}>
+                    <Text style={styles.textCategory}>Description</Text>
+                    <TextInput 
+                        placeholder='Optional'
+                        textContentType='none'
+                        placeholderTextColor={colors.lightGray3}
+                        selectionColor='black'
+                        style={styles.textInput}
+                        autoFocus={false}
+                        multiline={true}
+                    />
+                </View>
+                <View style={styles.footer}>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.textButton}>Add</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
+    containerScreen: {
+        height: hp('100%'),
+        width: wp('100%'),
+    },
     header: {
         paddingHorizontal: 10,
         paddingVertical: 20,
@@ -136,7 +229,7 @@ const styles = StyleSheet.create({
     },
     container: {
         paddingHorizontal: 10,
-        paddingVertical: 20,
+        paddingVertical: 10,
         alignItems: 'center',
     },
     textInput: {
@@ -153,21 +246,74 @@ const styles = StyleSheet.create({
         marginBottom: 16
     },
     containerText: {
-        alignSelf: 'left',
+        alignSelf: 'flex-start',
         paddingHorizontal: 27,
     },
     textType: {
         fontSize: 16,
-        color: colors.lightGray4
+        color: colors.lightGray4,
+    },
+    textReminder: {
+        fontSize: 16,
+        color: colors.lightGray4,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
     },
     containerSegmentedButton: {
         paddingHorizontal: 35,
+    },
+    containerDatePicker: {
+        alignSelf: 'flex-start',
+        paddingHorizontal: 37,
     },
     textDate: {
         fontSize: 16,
         color: colors.lightGray4,
         paddingTop: 20,
-    }
+        paddingVertical: 10,
+    },
+    textDateAndroid: {
+        fontSize: 23,
+        color: colors.lightGray4,
+    },
+    containerPickDate: {
+        flexDirection: 'row',
+    },
+    containerCategory: {
+        paddingHorizontal: 37,
+        paddingVertical: 20,
+    },
+    textCategory: {
+        fontSize: 16,
+        color: colors.lightGray4,
+        paddingVertical: 10,
+    },
+    containerDescription: {
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        alignItems: 'flex-start',
+        paddingLeft: 37
+    },
+    footer: {
+        paddingVertical: 20,
+        paddingLeft: 37,
+    },
+    button: {
+        height: 50,
+        width: 343,
+        backgroundColor: colors.red,
+        borderRadius: 100,
+        paddingTop: 16,
+        paddingBottom: 16,
+        paddingLeft: 141,
+        paddingRight: 141,
+    },
+    textButton: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'center'
+    },
 })
 
 export default AddGoalScreen;
