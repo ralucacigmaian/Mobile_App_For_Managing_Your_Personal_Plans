@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
 import JournalEntry from '../components/JournalEntry';
+import Footer from '../components/Footer';
 
 const JournalingScreen = () => {
     return (
@@ -22,9 +23,7 @@ const JournalingScreen = () => {
                 </View>
                 <View style={styles.body}>
                     <View style={styles.containerButton}>
-                        <TouchableOpacity
-                            style={styles.button}
-                        >
+                        <TouchableOpacity style={styles.button}>
                             <Text style={styles.textButton}>How are you today?</Text>
                         </TouchableOpacity>
                     </View>
@@ -35,6 +34,7 @@ const JournalingScreen = () => {
                     </View>
                 </View>
             </KeyboardAwareScrollView>
+            <Footer />
         </SafeAreaView>
     )
 }
@@ -68,8 +68,7 @@ const styles = StyleSheet.create({
         width: 238
     },
     body: {
-        // borderColor: 'red',
-        // borderWidth: 5,
+        paddingTop: 50,
     },
     containerButton: {
         alignItems: 'center'
