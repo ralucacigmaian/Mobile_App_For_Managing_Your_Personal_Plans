@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Button, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
@@ -8,7 +8,8 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
-import { SelectList } from 'react-native-dropdown-select-list';
+import SelectDropdown from 'react-native-select-dropdown';
+import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 
 const AddGoalScreen = () => {
 
@@ -16,8 +17,6 @@ const AddGoalScreen = () => {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [text, setText] = useState('Empty');
-    
-    const [selected, setSelected] = useState("");
 
     const data = [
         {key: '1', value: 'Category #1'},
@@ -175,26 +174,40 @@ const AddGoalScreen = () => {
                 </View>
                 <View style={styles.containerCategory}>
                     <Text style={styles.textCategory}>Category</Text>
-                    <SelectList
-                        setSelected={(value) => setSelected(value)}
+                    <SelectDropdown
                         data={data}
-                        save="value"
-                        searchPlaceholder='Search Category...'
-                        placeholder='Select Category'
-                        arrowicon={<Feather name="arrow-down" size={20} color={colors.lightGray4} />}
-                        closeicon={<EvilIcons name="close" size={20} color={colors.lightGray4} />}
+                        onSelect={(selectedItem, index) => {
+                            // console.log(selectedItem, index);
+                        }}
+                        buttonTextAfterSelection={(selectedItem, index) => {
+                            return selectedItem.value;
+                        }}
+                        rowTextForSelection={(item, index) => {
+                            return item.value;
+                        }}
+                        defaultButtonText='Select Category'
+                        buttonStyle={styles.dropdown}
+                        buttonTextStyle={styles.textCategoryDropdown}
+                        renderDropdownIcon={isOpened => {
+                            return <Feather name="arrow-down" size={20} color={colors.lightGray4} />;
+                        }}
+                        dropdownStyle={styles.dropdownList}
+                        rowTextStyle={styles.textCategoryDropdown}
+                        search={true}
+                        searchInputStyle={styles.dropdownList}
+                        searchPlaceHolder='Search Category'
+                        searchInputTxtColor={colors.lightGray4}
+                        renderSearchInputLeftIcon={isSearched => {
+                            return <EvilIcons name="search" size={24} color={colors.lightGray4} />;
+                        }}
                     />
                 </View>
                 <View style={styles.containerDescription}>
                     <Text style={styles.textCategory}>Description</Text>
-                    <TextInput 
-                        placeholder='Optional'
-                        textContentType='none'
-                        placeholderTextColor={colors.lightGray3}
-                        selectionColor='black'
+                    <AutoGrowingTextInput
                         style={styles.textInput}
-                        autoFocus={false}
-                        multiline={true}
+                        placeholder='Optional'
+                        selectionColor='black'
                     />
                 </View>
                 <View style={styles.footer}>
@@ -288,14 +301,38 @@ const styles = StyleSheet.create({
         color: colors.lightGray4,
         paddingVertical: 10,
     },
+    dropdown: {
+        height: 55,
+        width: 343,
+        fontSize: 16,
+        backgroundColor: colors.lightGray,
+        borderColor: colors.lightGray2,
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingLeft: 16,
+        paddingTop: 16,
+        paddingBottom: 16,
+        marginBottom: 16
+    },
+    textCategoryDropdown: {
+        fontSize: 16,
+        color: colors.lightGray3,
+    },
+    dropdownList: {
+        fontSize: 16,
+        backgroundColor: colors.lightGray2,
+        borderColor: colors.lightGray2,
+        borderWidth: 1,
+        borderRadius: 8,
+        color: colors.lightGray4,
+    },
     containerDescription: {
         paddingHorizontal: 10,
-        paddingVertical: 10,
         alignItems: 'flex-start',
         paddingLeft: 37
     },
     footer: {
-        paddingVertical: 20,
+        paddingVertical: 35,
         paddingLeft: 37,
     },
     button: {
