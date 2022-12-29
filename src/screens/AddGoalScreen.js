@@ -46,7 +46,6 @@ const AddGoalScreen = ({navigation}) => {
         else{
             if (goal.type === 'Unlimited')
                 setGoal({...goal, date:'', time:''});
-            console.log(goal);
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
         }
 

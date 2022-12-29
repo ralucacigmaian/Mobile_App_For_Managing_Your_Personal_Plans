@@ -7,10 +7,8 @@ import { colors } from '../utils/colors';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../components/Footer';
 import { firebase } from '../firebase/config'
-import {
-  ref,
-  onValue
-} from 'firebase/database';
+import { useNavigation } from '@react-navigation/native';
+
 const HomeScreen = ({navigation}) => {
     const handleSignOut = () => {
       firebase
@@ -21,21 +19,49 @@ const HomeScreen = ({navigation}) => {
         })
         .catch(error => alert(error.message))
     }
+    
 
+    const [dailyGoals, setDailyGoals] = useState([]);
+   
+    const getDailyGoals = () => {
+      console.log("Rendering again...");
+     
+      var goalsRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals")
+      goalsRef.once("value", function(snapshot) {
+        var dailyGoalsArray = []
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth() + 1; // Months start at 0!
+        let dd = today.getDate();
 
-    const [dailyGoals, setDailyGoals] = useState({});
-  
+        snapshot.forEach(function(item) {
+          var itemVal = item.val();
+          if(itemVal.type === 'Daily' && itemVal.date === (dd+'/'+mm+'/'+yyyy))
+            dailyGoalsArray.push({"key":item.key,"value":itemVal})      
+        }); 
+
+        setDailyGoals(dailyGoalsArray);
+        
+      });
+
+      // const data = snapshot.val();
+       // let myDailyGoals = {...data};
+      //setDailyGoals(myDailyGoals);
+      
+
+    }
+    
+    
+    
+
     //get all daily goals from database
     useEffect(() => {
-      var goalsRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals")
-        goalsRef.orderByChild("type").equalTo("Daily").on("child_added", function(snapshot) {
-        const data = snapshot.val();
-        let myDailyGoals = {...data};
-        setDailyGoals(myDailyGoals);
-     });
-    }, []);
-  
-    console.log(dailyGoals);
+      const unsubscribe = navigation.addListener('didFocus', () => {
+        console.log('In Navigation Add Listener Block');
+        getDailyGoals();
+      //return unsubscribe;
+    })}, [navigation]);
+
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -45,13 +71,23 @@ const HomeScreen = ({navigation}) => {
                         <Text style={styles.textDaily}>Daily</Text>
                         <Text style={styles.textGoals}>Goals</Text>
                         <Text style={styles.userGreeting}>Hello, {firebase.auth().currentUser?.displayName}! <Ionicons name="sunny" size={24} color="black" /></Text>
-                       
                     </View>
                 </View>
-       
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddGoal')}>
-          <Text style={styles.buttonText}>New goal</Text>
-        </TouchableOpacity>
+                <View style={styles.body}>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddGoal')}>
+                        <Text style={styles.buttonText}>New goal</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.textDailyGoals}>Daily Goals</Text>
+                  <View style={styles.dailyGoalsContainer}>
+                  {dailyGoals.map((item)=>{
+                      console.log(item)
+                  })}
+               
+                  </View>
+                </View>
+        
         <TouchableOpacity
           onPress={handleSignOut}
           style={styles.button}
@@ -77,6 +113,9 @@ const HomeScreen = ({navigation}) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
   },
+  buttonContainer:{
+    alignItems:"center"
+  },
   textDaily: {
       fontSize: 36,
       fontWeight: 'bold',
@@ -96,6 +135,15 @@ const HomeScreen = ({navigation}) => {
         left: 31,
         top: 10,
     },
+    textDailyGoals:{
+      fontSize: 16,
+      fontWeight: 'bold',
+      width: 87,
+      height: 19,
+      left: 11,
+      top: 10,
+    },
+
      button: {
         height: 50,
         width: 343,
