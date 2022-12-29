@@ -5,9 +5,10 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
 import { Ionicons } from '@expo/vector-icons';
+import CircularProgress from 'react-native-circular-progress-indicator';
 import Footer from '../components/Footer';
 import { firebase } from '../firebase/config'
-import { useNavigation } from '@react-navigation/native';
+import DailyGoalEntry from '../components/DailyGoalEntry';
 
 const HomeScreen = ({navigation}) => {
     const handleSignOut = () => {
@@ -22,7 +23,6 @@ const HomeScreen = ({navigation}) => {
     
 
     const [dailyGoals, setDailyGoals] = useState([]);
-   
     const getDailyGoals = () => {
       console.log("Rendering again...");
      
@@ -62,6 +62,8 @@ const HomeScreen = ({navigation}) => {
       //return unsubscribe;
     })}, [navigation]);
 
+    const [completed, setCompleted] = useState(0)
+   console.log(completed)
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -71,8 +73,25 @@ const HomeScreen = ({navigation}) => {
                         <Text style={styles.textDaily}>Daily</Text>
                         <Text style={styles.textGoals}>Goals</Text>
                         <Text style={styles.userGreeting}>Hello, {firebase.auth().currentUser?.displayName}! <Ionicons name="sunny" size={24} color="black" /></Text>
+                        <Text style={styles.goalsCompletedText}>You have completed {completed}/{dailyGoals.length} tasks for today! Good job!</Text>
+                       {Platform.OS === 'ios'?
+                        <View style={{paddingTop:20, paddingLeft:80}}>
+                        <CircularProgress
+                            radius={100}
+                            value={dailyGoals.length!=0?100*completed/dailyGoals.length:0}
+                            textColor='#CE615A'
+                            fontSize={20}
+                            valueSuffix={'%'}
+                            activeStrokeColor={'#CE615A'}
+                            inActiveStrokeOpacity={0.2}
+                            duration={4000}
+                          />
+                          </View>
+                        :
+                        <View></View>}
                     </View>
                 </View>
+
                 <View style={styles.body}>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddGoal')}>
@@ -81,19 +100,16 @@ const HomeScreen = ({navigation}) => {
                   </View>
                   <Text style={styles.textDailyGoals}>Daily Goals</Text>
                   <View style={styles.dailyGoalsContainer}>
-                  {dailyGoals.map((item)=>{
-                      console.log(item)
-                  })}
-               
+                    {dailyGoals.map((item)=>{
+                        return(<DailyGoalEntry key={item.key} dailyGoal={item} completed={completed} setCompleted={setCompleted}/>)
+                    })}
                   </View>
                 </View>
-        
-        <TouchableOpacity
-          onPress={handleSignOut}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Sign out</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleSignOut} style={styles.button}>
+            <Text style={styles.buttonText}>Sign out</Text>
+          </TouchableOpacity>
+        </View>
         </KeyboardAwareScrollView>
         <Footer />
       </SafeAreaView>
@@ -112,9 +128,11 @@ const HomeScreen = ({navigation}) => {
   header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
+      
   },
   buttonContainer:{
-    alignItems:"center"
+    alignItems:"center",
+    
   },
   textDaily: {
       fontSize: 36,
@@ -135,6 +153,13 @@ const HomeScreen = ({navigation}) => {
         left: 31,
         top: 10,
     },
+    goalsCompletedText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      left: 10,
+      top: 10,
+      flexShrink: 1
+  },
     textDailyGoals:{
       fontSize: 16,
       fontWeight: 'bold',
