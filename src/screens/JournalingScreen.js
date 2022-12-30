@@ -7,7 +7,7 @@ import { colors } from '../utils/colors';
 import JournalEntry from '../components/JournalEntry';
 import Footer from '../components/Footer';
 
-const JournalingScreen = () => {
+const JournalingScreen = ({navigation}) => {
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -25,6 +25,7 @@ const JournalingScreen = () => {
                     <View style={styles.containerButton}>
                         <TouchableOpacity
                             style={styles.button}
+                            onPress={() => navigation.navigate('AddJournalEntry')}
                         >
                             <Text style={styles.textButton}>How are you today?</Text>
                         </TouchableOpacity>

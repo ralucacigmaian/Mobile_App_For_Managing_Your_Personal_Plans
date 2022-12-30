@@ -5,4 +5,5 @@ export const colors = {
     lightGray3: '#BDBDBD',
     lightGray4: '#7D7D7D',
     teal: '#7FBBB3',
+    transparent: '#000000AA'
 }
