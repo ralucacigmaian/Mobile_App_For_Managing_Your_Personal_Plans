@@ -6,6 +6,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import AddGoalScreen from "./src/screens/AddGoalScreen";
 import MyGoalsScreen from "./src/screens/MyGoalsScreen";
 import JournalingScreen from "./src/screens/JournalingScreen";
+import AddJournalEntryScreen from "./src/screens/AddJournalEntryScreen";
 
 const navigator = createStackNavigator({
   SignUp: SignUpScreen,
@@ -14,6 +15,7 @@ const navigator = createStackNavigator({
   AddGoal: AddGoalScreen,
   MyGoals: MyGoalsScreen,
   Journaling: JournalingScreen,
+  AddJournalEntry: AddJournalEntryScreen,
 }, {
   initialRouteName: 'SignIn',
   defaultNavigationOptions : {

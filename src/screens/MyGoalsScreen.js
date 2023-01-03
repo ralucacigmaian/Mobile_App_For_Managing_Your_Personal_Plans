@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import MyGoalsEntry from '../components/MyGoalsEntry';
 
 
-const MyGoalsScreen = ({navigation}) => {
+const MyGoalsScreen = () => {
     return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <KeyboardAwareScrollView>

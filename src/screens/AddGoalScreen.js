@@ -47,6 +47,7 @@ const AddGoalScreen = ({navigation}) => {
             if (goal.type === 'Unlimited')
                 setGoal({...goal, date:'', time:''});
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
+            navigation.navigate('Home');
         }
 
         
@@ -257,7 +258,7 @@ const AddGoalScreen = ({navigation}) => {
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.button} onPress={() => handleAddGoal()}>
-                        <Text style={styles.textButton} >Add</Text>
+                        <Text style={styles.textButton}>Add</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>

@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { firebase } from '../firebase/config'
+import { firebase } from '../firebase/config';
+import { colors } from '../utils/colors';
 
 
 const setCategoryColor = (categoryName) =>{             //get different colours depending on category
@@ -90,13 +91,14 @@ const styles = StyleSheet.create({
         width: 349,
         height: 66,
         backgroundColor: "#FFFFFF",
-        shadowColor: '#171717',
-        shadowOffset: {width: -2, height: 4},
-        shadowOpacity: 0.8,
-        shadowRadius: 3,
-        elevation: 15,
-        shadowColor: 'rgba(100, 100, 111, 0.5)',
-        borderRadius:5,
+        // shadowColor: '#171717',
+        // shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 3,
+        shadowRadius: 10,
+        // elevation: 15,
+        // shadowColor: 'rgba(100, 100, 111, 0.5)',
+        borderRadius:10,
+        shadowColor: colors.lightGray3,
     },
     containerTitleText:{
         paddingLeft:18,
@@ -135,7 +137,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#CE615A',
       },
       checkboxLabel: {
-        marginLeft: 8,
         fontSize: 16,
         fontWeight:"bold",
         color:"white"

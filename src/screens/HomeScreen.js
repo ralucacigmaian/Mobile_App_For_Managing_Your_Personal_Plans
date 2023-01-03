@@ -75,7 +75,7 @@ const HomeScreen = ({navigation}) => {
                         <Text style={styles.userGreeting}>Hello, {firebase.auth().currentUser?.displayName}! <Ionicons name="sunny" size={24} color="black" /></Text>
                         <Text style={styles.goalsCompletedText}>You have completed {completed}/{dailyGoals.length} tasks for today! Good job!</Text>
                        {Platform.OS === 'ios'?
-                        <View style={{paddingTop:20, paddingLeft:80}}>
+                        <View style={{paddingTop:20, justifyContent: 'center', alignItems: 'center'}}>
                         <CircularProgress
                             radius={100}
                             value={dailyGoals.length!=0?100*completed/dailyGoals.length:0}
@@ -137,21 +137,24 @@ const HomeScreen = ({navigation}) => {
   textDaily: {
       fontSize: 36,
       fontWeight: 'bold',
-      left: 50% - 136/2 + 13.5,
-      top: 0
+      paddingLeft: 10,
+      // left: 50% - 136/2 + 13.5,
+      // top: 0
   },
   textGoals: {
       fontSize: 48,
       fontWeight: 'bold',
       color: colors.red,
-      left: 50% - 136/2 + 13.5,
-      top: 0
+      paddingLeft: 10,
+      // left: 50% - 136/2 + 13.5,
+      // top: 0
   },
     userGreeting: {
         fontSize: 20,
         fontWeight: 'bold',
-        left: 31,
-        top: 10,
+        paddingLeft: 10,
+        // left: 31,
+        // top: 10,
     },
     goalsCompletedText: {
       fontSize: 20,
@@ -165,7 +168,7 @@ const HomeScreen = ({navigation}) => {
       fontWeight: 'bold',
       width: 87,
       height: 19,
-      left: 11,
+      left: 10,
       top: 10,
     },
 

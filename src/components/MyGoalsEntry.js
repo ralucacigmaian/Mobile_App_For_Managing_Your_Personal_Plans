@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase/config'
+import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
+import { colors } from '../utils/colors';
 
 
 const setCategoryColor = (categoryName) =>{             //get different colours depending on category
@@ -79,13 +81,14 @@ const styles = StyleSheet.create({
         width: 349,
         height: 112,
         backgroundColor: "#FFFFFF",
-        shadowColor: '#171717',
-        shadowOffset: {width: -2, height: 4},
-        shadowOpacity: 0.8,
-        shadowRadius: 3,
-        elevation: 15,
-        shadowColor: 'rgba(100, 100, 111, 0.5)',
-        borderRadius:5,
+        // shadowColor: '#171717',
+        // shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 3,
+        shadowRadius: 10,
+        // elevation: 15,
+        // shadowColor: 'rgba(100, 100, 111, 0.5)',
+        shadowColor: colors.lightGray3,
+        borderRadius:10,
     },
     containerTitleText:{
         paddingLeft:18,
