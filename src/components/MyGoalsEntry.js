@@ -24,7 +24,7 @@ const setCategoryColor = (categoryName) =>{             //get different colours 
 
 
 
-const MyGoalsEntry = ({key, myGoal, deleted, setDeleted}) => {
+const MyGoalsEntry = ({navigation, key, myGoal, deleted, setDeleted}) => {
     
     const categoryColorStyles = {
         backgroundColor: setCategoryColor(myGoal.value.category)
@@ -56,7 +56,7 @@ return(
                     <Text style={styles.categoryText}>Details</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.editButton}>
+                <TouchableOpacity style={styles.editButton} onPress = {() => {navigation.navigate('EditGoal', {myGoal:myGoal})}}>
                 <Ionicons name="create-outline"></Ionicons>
                 </TouchableOpacity>
 

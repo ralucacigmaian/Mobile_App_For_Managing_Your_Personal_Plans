@@ -65,7 +65,7 @@ const MyGoalsScreen = ({navigation}) => {
         </View>
         <View>
         {myGoals.map((item)=>{
-                        return(<MyGoalsEntry key={item.key} myGoal={item} deleted={deleted} setDeleted={setDeleted}/>)
+                        return(<MyGoalsEntry navigation={navigation} key={item.key} myGoal={item} deleted={deleted} setDeleted={setDeleted}/>)
                     })}
         </View>
         </KeyboardAwareScrollView>
