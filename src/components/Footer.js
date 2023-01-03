@@ -4,24 +4,26 @@ import { Feather } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../utils/colors';
+import { withNavigation } from 'react-navigation';
 
-const Footer = () => {
+const Footer = ({navigation}) => {
+
     return (
         <View style={styles.containerFooter}>
             <View>
-                <TouchableOpacity style={styles.container}>
+                <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('Home')}>
                     <Feather name="home" size={24} color={colors.lightGray4} />
                     <Text style={styles.text}>Home</Text>
                 </TouchableOpacity>
             </View>
             <View>
-                <TouchableOpacity style={styles.container}>
+                <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('Journaling')}>
                     <Feather name="book-open" size={24} color={colors.lightGray4} />
                     <Text style={styles.text}>Journal</Text>
                 </TouchableOpacity>
             </View>
             <View>
-                <TouchableOpacity style={styles.container}>
+                <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('MyGoals')}>
                     <Octicons name="checklist" size={24} color={colors.lightGray4} />
                     <Text style={styles.text}>My Goals</Text>
                 </TouchableOpacity>
@@ -52,4 +54,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Footer;
+export default withNavigation(Footer);
