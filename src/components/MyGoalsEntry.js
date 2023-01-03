@@ -24,33 +24,32 @@ const setCategoryColor = (categoryName) =>{             //get different colours 
 
 
 
-const MyGoalsEntry = () => {
-    const goal = {
-        title:'Get a promotion or a salary raise',
-        type: 'Daily',
-        category:'Career'
-    }
+const MyGoalsEntry = ({key, myGoal, deleted, setDeleted}) => {
+    
     const categoryColorStyles = {
-        backgroundColor: setCategoryColor(goal.category)
+        backgroundColor: setCategoryColor(myGoal.value.category)
     };
 
     const typeColorStyles = {
-        backgroundColor: goal.type === 'Unlimited'?'#7FBBB3':'#CE615A'
+        backgroundColor: myGoal.value.type === 'Unlimited'?'#7FBBB3':'#CE615A'
     };
 
-
+const deleteMyGoal = () => {
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
+    setDeleted(!deleted)
+}
    
 return(
     <View style={styles.container}>
          <View style={styles.body}>
                 <View style={styles.containerTitleText}>
-                    <Text style={styles.goalTitle}>{goal.title}</Text>
+                    <Text style={styles.goalTitle}>{myGoal.value.title}</Text>
                 </View>
                 <View style={[styles.categoryContainer, categoryColorStyles]}>
-                    <Text style={styles.categoryText}>{goal.category.toUpperCase()}</Text>
+                    <Text style={styles.categoryText}>{myGoal.value.category.toUpperCase()}</Text>
                 </View>
                 <View style={[styles.typeContainer, typeColorStyles]}>
-                    <Text style={styles.categoryText}>{goal.type.toUpperCase()}</Text>
+                    <Text style={styles.categoryText}>{myGoal.value.type.toUpperCase()}</Text>
                 </View>
                 <View style={{paddingRight:1200, flexDirection:"row"}}>
                 <TouchableOpacity style={styles.detailsContainer}>
@@ -61,7 +60,7 @@ return(
                 <Ionicons name="create-outline"></Ionicons>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.deleteButton}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => {deleteMyGoal()}}>
                     <Ionicons name="trash-outline"></Ionicons>
                 </TouchableOpacity>
             </View>     
