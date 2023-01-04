@@ -32,8 +32,8 @@ const AddGoalScreen = ({navigation}) => {
         title: '',
         type: 'Daily', 
         reminder: 'No',
-        date:'',
-        time: '',
+        date: date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear(),
+        time: date.getHours()+":"+ date.getMinutes(),
         category:'Personal growth',
         description:'',
         completed:0

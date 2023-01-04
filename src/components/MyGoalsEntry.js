@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase/config'
 import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
@@ -35,8 +35,27 @@ const MyGoalsEntry = ({navigation, key, myGoal, deleted, setDeleted}) => {
     };
 
 const deleteMyGoal = () => {
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
-    setDeleted(!deleted)
+    Alert.alert(
+        "Delete goal?",
+        "Are you sure you want to delete this goal?",
+        [
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
+            setDeleted(!deleted)
+            },
+          },
+          // The "No" button
+          // Does nothing but dismiss the dialog when tapped
+          {
+            text: "No",
+          },
+        ]
+      );
+    //firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
+    //setDeleted(!deleted)
 }
    
 return(

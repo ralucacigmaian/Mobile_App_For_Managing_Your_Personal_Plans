@@ -14,7 +14,7 @@ import { firebase } from '../firebase/config'
 import moment from 'moment'
 const EditGoalScreen = ({navigation}) => {
 
-    const [date, setDate] = useState(navigation.getParam('myGoal').value.date? moment(navigation.getParam('myGoal').value.date, "DD/MM/YYYY").toDate() : new Date());
+    const [date, setDate] = useState(navigation.getParam('myGoal').value.date? moment(navigation.getParam('myGoal').value.date+navigation.getParam('myGoal').value.time, "DD/MM/YYYY hh:mm").toDate() : new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [text, setText] = useState('Empty');
@@ -279,7 +279,7 @@ const EditGoalScreen = ({navigation}) => {
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.button} onPress={() => handleEditGoal()}>
-                        <Text style={styles.textButton}>Add</Text>
+                        <Text style={styles.textButton}>Edit</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
