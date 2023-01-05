@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         shadowColor: colors.lightGray3,
     },
     containerTitleText:{
-        paddingLeft:18,
+        paddingLeft:10,
     },
     goalTitle:{
         fontSize:14,
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
         width:64,
         height: 16,
         left: 280,
+        top: 20,
         alignItems: "center",
         justifyContent:"center",
         backgroundColor:"blue",
