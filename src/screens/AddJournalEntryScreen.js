@@ -27,7 +27,7 @@ const AddJournalEntryScreen = ({navigation}) => {
             navigation.navigate('Journaling');
         }
     }
-    console.log(journalEntry)
+    
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>

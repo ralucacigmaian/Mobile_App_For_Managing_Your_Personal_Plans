@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -6,8 +6,36 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { colors } from '../utils/colors';
 import JournalEntry from '../components/JournalEntry';
 import Footer from '../components/Footer';
+import { firebase } from '../firebase/config'
 
 const JournalingScreen = ({navigation}) => {
+
+    const [journals, setJournals] = useState([]);
+
+    const getJournals = () => {
+     
+     
+        var journalsRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/journals")
+        journalsRef.once("value", function(snapshot) {
+          var journalsArray = []
+          
+          snapshot.forEach(function(item) {
+            var itemVal = item.val();
+              journalsArray.push({"key":item.key, "value":itemVal})      
+          }); 
+  
+          setJournals(journalsArray);
+          
+        });
+      }
+
+      useEffect(() => {
+        const unsubscribe = navigation.addListener('didFocus', () => {
+          console.log('In Navigation Add Listener Block');
+          getJournals();
+        //return unsubscribe;
+      })}, [navigation]);
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -32,8 +60,11 @@ const JournalingScreen = ({navigation}) => {
                     </View>
                     <View style={styles.containerJournalEntry}>
                         <Text style={styles.textJournalEntry}>Past journal entries</Text>
-                        <JournalEntry />
-                        <JournalEntry />
+                        {journals.map((item)=>{
+                        return(<JournalEntry key={item.key} journal={item} />)
+                    })}
+                        
+                       
                     </View>
                 </View>
             </KeyboardAwareScrollView>

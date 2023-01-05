@@ -6,20 +6,38 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { colors } from '../utils/colors';
 import { Entypo } from '@expo/vector-icons';
 
-const JournalEntry = () => {
+const setMoodColor = (mood) =>{             //get different colours depending on category
+    if (mood === 0)
+        return '#CE615A'
+    //if (categoryName === 'Fun')
+        //return '#506970'
+    if (mood === 1)
+        return '#FFCF8D'
+    if (mood === 2)
+    return '#7FBBB3'
+    
+}
+
+const JournalEntry = ({key, journal}) => {
+
+    
+    const moodColorStyles = {
+        backgroundColor: setMoodColor(journal.value.mood)
+    };
+
     return (
         <View style={styles.container}>
-            <View style={styles.body}>
+            <View style={[styles.body,moodColorStyles]}>
                 <View style={styles.editOptions}>
                     <TouchableOpacity>
                         <Entypo name="dots-three-vertical" size={17} color="white" />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.containerText}>
-                    <Text style={styles.textInput}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam consectetur et est et rhoncus. Duis tristique ipsum a magna blandit, eu condimentum augue pretium.</Text>
+                    <Text style={styles.textInput}>{journal.value.description.slice(0,145)}{journal.value.description.length > 145 ? '...' : ''}</Text>
                 </View>
                 <View style={styles.containerDate}>
-                    <Text style={styles.textDate}>Added on 6 Nov. 2022</Text>
+                    <Text style={styles.textDate}>Added on {journal.value.date}.</Text>
                 </View>
             </View>
         </View>
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         paddingTop: 15,
-        paddingRight: 2
+        paddingRight: 5
     },
     textDate: {
         fontSize: 15,
