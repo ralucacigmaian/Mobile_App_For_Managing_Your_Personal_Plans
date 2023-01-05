@@ -6,11 +6,28 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { colors } from '../utils/colors';
 import { EvilIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
-
+import { firebase } from '../firebase/config'
 const AddJournalEntryScreen = ({navigation}) => {
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [journalEntry, setJournalEntry] = useState({
+        description:'',
+        date:new Date().toDateString(),
+        mood:0
+    })
 
+    const handleAddJournalEntry = () =>{
+        if(journalEntry.description === '' ) {
+            Alert.alert('Please write something in your journal!')
+        }
+        else{
+            
+            setJournalEntry({...journalEntry, date:new Date().toDateString()});
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/journals").push(journalEntry);
+            navigation.navigate('Journaling');
+        }
+    }
+    console.log(journalEntry)
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -36,6 +53,8 @@ const AddJournalEntryScreen = ({navigation}) => {
                             autoFocus={true}
                             multiline={true}
                             numberOfLines={1}
+                            value={journalEntry.description}
+                            onChangeText={(text) => setJournalEntry({...journalEntry, description: text})}
                         />
                     </View>
                     <View style={styles.containerQuestion}>
@@ -76,13 +95,15 @@ const AddJournalEntryScreen = ({navigation}) => {
                                 minimumTrackTintColor={colors.red}
                                 maximumTrackTintColor={colors.lightGray4}
                                 step={1}
+                                value={journalEntry.mood}
+                                onValueChange={(value) => setJournalEntry({...journalEntry, mood: value})}
                             />
                             
                         </View>
                     </View>
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress = {() => handleAddJournalEntry()}>
                         <Text style={styles.textButton}>Add</Text>
                     </TouchableOpacity>
                 </View>
