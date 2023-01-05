@@ -11,10 +11,10 @@ import { EvilIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import { firebase } from '../firebase/config'
+import moment from 'moment'
+const EditGoalScreen = ({navigation}) => {
 
-const AddGoalScreen = ({navigation}) => {
-
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(navigation.getParam('myGoal').value.date? moment(navigation.getParam('myGoal').value.date+navigation.getParam('myGoal').value.time, "DD/MM/YYYY hh:mm").toDate() : new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [text, setText] = useState('Empty');
@@ -26,28 +26,49 @@ const AddGoalScreen = ({navigation}) => {
         {key: '4', value: 'Health'},
         {key: '5', value: 'Personal growth'},
     ]
-
-
+   // const setDateAndTime = () => {
+       // var date = moment(navigation.getParam('myGoal').value.date, "DD/MM/YYYY").toDate();
+       // var date = new Date("01/01/2023" + navigation.getParam('myGoal').value.time)
+       // return date;
+    //}
+    //console.log(setDateAndTime())
     const [goal, setGoal] = useState({ 
-        title: '',
-        type: 'Daily', 
-        reminder: 'No',
-        date: date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear(),
-        time: date.getHours()+":"+ date.getMinutes(),
-        category:'Personal growth',
-        description:'',
-        completed:0
+        title: navigation.getParam('myGoal').value.title,
+        type:  navigation.getParam('myGoal').value.type, 
+        reminder: navigation.getParam('myGoal').value.reminder,
+        date:navigation.getParam('myGoal').value.date,
+        time: navigation.getParam('myGoal').value.time,
+        category:navigation.getParam('myGoal').value.category,
+        description:navigation.getParam('myGoal').value.description,
+        completed:navigation.getParam('myGoal').value.completed
       });
 
-      const handleAddGoal = () => {
+      const handleEditGoal = () => {
         if(goal.title === '' ) {
             Alert.alert('Please enter a title for your goal!')
         }
         else{
             if (goal.type === 'Unlimited')
                 setGoal({...goal, date:'', time:''});
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
-            navigation.navigate('Home');
+            console.log(goal)
+           // firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
+           firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+navigation.getParam('myGoal').key).set({
+            title: goal.title,
+            type: goal.type, 
+            reminder: goal.reminder,
+            date:goal.date,
+            time: goal.time,
+            category:goal.category,
+            description:goal.description,
+            completed:goal.completed
+          }, (error) => {
+            if (error) {
+                Alert.alert('Error editing goal!')
+            } else {
+                navigation.navigate('MyGoals');
+            }
+          });
+            
         }
 
         
@@ -165,9 +186,9 @@ const AddGoalScreen = ({navigation}) => {
                 <StatusBar/>
                 <View style={styles.header}>
                     <TouchableOpacity>
-                        <Text style={styles.backButton} onPress={() => navigation.navigate('Home')}>Back</Text>
+                        <Text style={styles.backButton} onPress={() => navigation.navigate('MyGoals')}>Back</Text>
                     </TouchableOpacity>
-                    <Text style={styles.textNewGoal}>New Goal</Text>
+                    <Text style={styles.textNewGoal}>Edit Goal</Text>
                 </View>
                 <View style={styles.container}>
                     <TextInput 
@@ -229,7 +250,7 @@ const AddGoalScreen = ({navigation}) => {
                         rowTextForSelection={(item, index) => {
                             return item.value;
                         }}
-                        defaultButtonText='Select Category'
+                        defaultButtonText={navigation.getParam('myGoal').value.category}
                         buttonStyle={styles.dropdown}
                         buttonTextStyle={styles.textCategoryDropdown}
                         renderDropdownIcon={isOpened => {
@@ -257,8 +278,8 @@ const AddGoalScreen = ({navigation}) => {
                     />
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleAddGoal()}>
-                        <Text style={styles.textButton}>Add</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => handleEditGoal()}>
+                        <Text style={styles.textButton}>Edit</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
@@ -399,4 +420,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default AddGoalScreen;
+export default EditGoalScreen;

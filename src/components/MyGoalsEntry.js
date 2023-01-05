@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { Pressable, Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase/config'
 import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
@@ -24,47 +24,94 @@ const setCategoryColor = (categoryName) =>{             //get different colours 
 
 
 
-const MyGoalsEntry = () => {
-    const goal = {
-        title:'Get a promotion or a salary raise',
-        type: 'Daily',
-        category:'Career'
-    }
+const MyGoalsEntry = ({navigation, myGoal, deleted, setDeleted}) => {
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const categoryTextSize = {
+        fontSize: myGoal.value.type === 'Personal growth' ? 8 : 10,
+    };
+
     const categoryColorStyles = {
-        backgroundColor: setCategoryColor(goal.category)
+        backgroundColor: setCategoryColor(myGoal.value.category)
     };
 
     const typeColorStyles = {
-        backgroundColor: goal.type === 'Unlimited'?'#7FBBB3':'#CE615A'
+        backgroundColor: myGoal.value.type === 'Unlimited'?'#7FBBB3':'#CE615A'
     };
 
-
+const deleteMyGoal = () => {
+    Alert.alert(
+        "Delete goal?",
+        "Are you sure you want to delete this goal?",
+        [
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
+            setDeleted(!deleted)
+            },
+          },
+          // The "No" button
+          // Does nothing but dismiss the dialog when tapped
+          {
+            text: "No",
+          },
+        ]
+      );
+    //firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
+    //setDeleted(!deleted)
+}
    
 return(
     <View style={styles.container}>
          <View style={styles.body}>
                 <View style={styles.containerTitleText}>
-                    <Text style={styles.goalTitle}>{goal.title}</Text>
+                    <Text style={styles.goalTitle}>{myGoal.value.title}</Text>
                 </View>
                 <View style={[styles.categoryContainer, categoryColorStyles]}>
-                    <Text style={styles.categoryText}>{goal.category.toUpperCase()}</Text>
+                    <Text style={styles.categoryText}>{myGoal.value.category.toUpperCase()}</Text>
                 </View>
                 <View style={[styles.typeContainer, typeColorStyles]}>
-                    <Text style={styles.categoryText}>{goal.type.toUpperCase()}</Text>
+                    <Text style={styles.categoryText}>{myGoal.value.type.toUpperCase()}</Text>
                 </View>
-                <View style={{paddingRight:1200, flexDirection:"row"}}>
-                <TouchableOpacity style={styles.detailsContainer}>
-                    <Text style={styles.categoryText}>Details</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.editButton}>
-                <Ionicons name="create-outline"></Ionicons>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.deleteButton}>
-                    <Ionicons name="trash-outline"></Ionicons>
-                </TouchableOpacity>
-            </View>     
+                <View style={styles.containerActions}>
+                    <View style={styles.details}>
+                        <Modal
+                            transparent={true}
+                            animationType='fade'
+                            visible={modalVisible}
+                            onRequestClose={() => setModalVisible(false)}
+                            style={styles.modal}
+                        >
+                            <View style={styles.containerModal}>
+                                <View style={styles.containerContentModal}>
+                                    <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
+                                        {myGoal.value.reminder === "No" ? <Text>No reminder</Text> : <Text>Reminder</Text>}
+                                        <Text>This goal is due in {myGoal.value.date} at {myGoal.value.time}</Text>
+                                        {myGoal.value.description === "" ? null : <Text>Description: {myGoal.value.description}</Text>}
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+                        <TouchableOpacity style={styles.detailsContainer} onPress={() => setModalVisible(true)}>
+                            <Text style={styles.categoryText}>Details</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.actions}>
+                        <View style={styles.edit}>
+                            <TouchableOpacity onPress = {() => {navigation.navigate('EditGoal', {myGoal:myGoal})}}>
+                                <Ionicons name="create-outline" color={colors.lightGray4} size={20}></Ionicons>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.delete}>
+                            <TouchableOpacity onPress={() => {deleteMyGoal()}}>
+                                <Ionicons name="trash-outline" color={colors.lightGray4} size={20}></Ionicons>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
         </View>
     </View>
 )
@@ -122,8 +169,8 @@ const styles = StyleSheet.create({
         width:64,
         height: 16,
         backgroundColor:'#CE615A',
-        top:32,
-        left:16,
+        // top:32,
+        left:10,
         alignItems: "center",
         justifyContent:"center",
         borderRadius:100,
@@ -145,7 +192,7 @@ const styles = StyleSheet.create({
         justifyContent:"center",
     },
     categoryText:{
-        fontSize:10,
+        fontSize: 10,
         color:"white",
         fontWeight:"bold"
     },
@@ -186,6 +233,47 @@ const styles = StyleSheet.create({
         backgroundColor:"#FFCF8D",
         borderRadius:100,
     },
+    containerDetails: {
+
+    },
+    containerModal: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.transparent,
+    },
+    containerContentModal: {
+        backgroundColor: 'white',
+        margin: 50,
+        padding: 20,
+        borderRadius: 8,
+    },
+    textModal: {
+        fontSize: 16,
+        color: colors.lightGray4
+    },
+    containerActions: {
+        // borderWidth: 10,
+        // borderColor: 'red',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        paddingTop: 20,
+    },
+    actions: {
+        flexDirection: 'row',
+        paddingVertical: 5,
+        paddingHorizontal: 10
+    },
+    edit: {
+        paddingRight: 10
+    },
+    details: {
+        // borderWidth: 5,
+        // borderColor: 'black',
+        left: -210,
+        paddingBottom: 5
+    }
 })
 
 export default MyGoalsEntry;
