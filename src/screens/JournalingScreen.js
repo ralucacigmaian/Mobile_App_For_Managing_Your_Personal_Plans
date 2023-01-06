@@ -36,6 +36,34 @@ const JournalingScreen = ({navigation}) => {
         //return unsubscribe;
       })}, [navigation]);
 
+
+    /////////////////
+    const [files, setFiles] = useState();
+
+    useEffect(() => {
+        const fetchImages = async () => {
+          let result = await firebase.storage().ref('users/' + firebase.auth().currentUser.uid + "/journal"+ new Date().toDateString()).listAll();
+          let urlPromises = result.items.map((imageRef) =>
+            imageRef.getDownloadURL()
+          );
+    
+          return Promise.all(urlPromises);
+        };
+    
+        const loadImages = async () => {
+          const urls = await fetchImages();
+          setFiles(urls);
+        };
+        loadImages();
+    }, []);
+    
+      console.log(files);
+
+
+
+
+    ////////////////
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
@@ -10,6 +10,7 @@ export default function CameraScreen({navigation}) {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
   useEffect(() => {
     (async () => {
@@ -45,15 +46,33 @@ export default function CameraScreen({navigation}) {
     };
 
     let savePhoto = () => {
-        firebase.storage().ref('users/' + firebase.auth().currentUser.uid + "/journal"+ new Date().toDateString()).put(photo.uri).then((snapshot) => {
-            console.log('Uploaded a blob or file!');
-          });
+        uploadImageAsync(photo.uri)
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
         setPhoto(undefined);
         navigation.navigate('AddJournalEntry')
       });
     };
 
+
+    async function uploadImageAsync(uri) {
+        const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(xhr.response);
+          };
+          xhr.onerror = function (e) {
+            console.log(e);
+            reject(new TypeError("Network request failed"));
+          };
+          xhr.responseType = "blob";
+          xhr.open("GET", uri, true);
+          xhr.send(null);
+        });
+    
+        const ref = firebase.storage().ref('users/' + firebase.auth().currentUser.uid).child("journal"+new Date().toDateString());
+        const snapshot = await ref.put(blob);
+        blob.close();
+    }
     return (
       <SafeAreaView style={styles.container}>
         <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
@@ -65,13 +84,28 @@ export default function CameraScreen({navigation}) {
   }
 
   return (
-    <Camera style={styles.container} ref={cameraRef}>
+    <Camera style={styles.container} ref={cameraRef}  type={type}>
       <View style={styles.buttonContainer}>
         <Button title="Take Pic" onPress={takePic} />
       </View>
       <View style={styles.buttonContainer}>
         <Button title="Back" onPress={() => {navigation.navigate('AddJournalEntry')}} />
       </View>
+      <View style={styles.buttonContainer}>
+      <TouchableOpacity
+              
+              onPress={() => {
+                setType(
+                  type === Camera.Constants.Type.back
+                    ? Camera.Constants.Type.front
+                    : Camera.Constants.Type.back
+                );
+              }}
+            >
+                 <Text style={{ fontSize: 20, marginBottom: 10, color: "black" }}>
+                Flip
+              </Text>
+        </TouchableOpacity></View>
       <StatusBar style="auto" />
     </Camera>
   );
