@@ -17,11 +17,12 @@ const AddJournalEntryScreen = ({navigation}) => {
     })
 
     const handleAddJournalEntry = () =>{
-        if(journalEntry.description === '' ) {
+        if(journalEntry.description === '' )
+        {
             Alert.alert('Please write something in your journal!')
         }
-        else{
-            
+        else
+        {
             setJournalEntry({...journalEntry, date:new Date().toDateString()});
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/journals").push(journalEntry);
             navigation.navigate('Journaling');
@@ -78,6 +79,13 @@ const AddJournalEntryScreen = ({navigation}) => {
                         </TouchableOpacity>
                         <Text style={styles.question}>What do I write in a journal?</Text>
                     </View>
+
+                    <View style={styles.footer}>
+                    <TouchableOpacity style={styles.buttonPicture} onPress = {() => navigation.navigate('Camera')}>
+                        <Text style={styles.textButtonPicture}>Take a picture</Text>
+                    </TouchableOpacity>
+                    </View>
+
                     <View style={styles.containerScroll}>
                         <View style={styles.textScroll}>
                             <Text style={styles.questionScroll}>What was your overall mood today?</Text>
@@ -218,6 +226,22 @@ const styles = StyleSheet.create({
         paddingRight: 141,
     },
     textButton: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'center'
+    },
+    buttonPicture: {
+        height: 50,
+        width: 150,
+        backgroundColor: colors.red,
+        borderRadius: 100,
+        paddingTop: 16,
+        paddingBottom: 16,
+        paddingLeft: 14,
+        paddingRight: 14,
+    },
+    textButtonPicture: {
         fontSize: 16,
         fontWeight: 'bold',
         color: 'white',

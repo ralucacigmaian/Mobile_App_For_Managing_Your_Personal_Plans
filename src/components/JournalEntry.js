@@ -77,7 +77,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         paddingTop: 15,
-        paddingRight: 5
+        paddingRight: 5,
+        flex: 1
     },
     textDate: {
         fontSize: 15,
