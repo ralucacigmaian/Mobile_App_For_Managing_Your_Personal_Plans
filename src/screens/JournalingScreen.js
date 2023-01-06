@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
@@ -29,6 +29,19 @@ const JournalingScreen = ({navigation}) => {
         });
       }
 
+    const handleAddJournalEntry = () =>{
+        var ok = 1;
+        journals.map((item)=>{
+            if (item.value.date === new Date().toDateString())
+                ok = 0;
+        })
+
+        if (ok === 0)
+            Alert.alert('Already added a journal entry for today!')
+        else 
+            navigation.navigate('AddJournalEntry')
+
+    }
       useEffect(() => {
         const unsubscribe = navigation.addListener('didFocus', () => {
           console.log('In Navigation Add Listener Block');
@@ -36,33 +49,6 @@ const JournalingScreen = ({navigation}) => {
         //return unsubscribe;
       })}, [navigation]);
 
-
-    /////////////////
-    const [files, setFiles] = useState();
-
-    useEffect(() => {
-        const fetchImages = async () => {
-          let result = await firebase.storage().ref('users/' + firebase.auth().currentUser.uid + "/journal"+ new Date().toDateString()).listAll();
-          let urlPromises = result.items.map((imageRef) =>
-            imageRef.getDownloadURL()
-          );
-    
-          return Promise.all(urlPromises);
-        };
-    
-        const loadImages = async () => {
-          const urls = await fetchImages();
-          setFiles(urls);
-        };
-        loadImages();
-    }, []);
-    
-      console.log(files);
-
-
-
-
-    ////////////////
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -81,7 +67,7 @@ const JournalingScreen = ({navigation}) => {
                     <View style={styles.containerButton}>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => navigation.navigate('AddJournalEntry')}
+                            onPress={() => handleAddJournalEntry()}
                         >
                             <Text style={styles.textButton}>How are you today?</Text>
                         </TouchableOpacity>
