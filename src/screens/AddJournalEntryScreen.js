@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useCallback } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { colors } from '../utils/colors';
 import { EvilIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
-import { firebase } from '../firebase/config'
+import { firebase } from '../firebase/config';
+
 const AddJournalEntryScreen = ({navigation}) => {
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -80,7 +81,7 @@ const AddJournalEntryScreen = ({navigation}) => {
                         <Text style={styles.question}>What do I write in a journal?</Text>
                     </View>
 
-                    <View style={styles.footer}>
+                    <View style={styles.containerAddPicture}>
                     <TouchableOpacity style={styles.buttonPicture} onPress = {() => navigation.navigate('Camera')}>
                         <Text style={styles.textButtonPicture}>Take a picture</Text>
                     </TouchableOpacity>
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     textInput: {
-        height: 427,
+        height: 345,
         width: 343,
         fontSize: 16,
         backgroundColor: colors.lightGray,
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     containerScroll: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 30
+        paddingTop: 10
     },
     questionScroll: {
         fontSize: 16,
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     footer: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 50
+        paddingTop: 70
     },
     button: {
         height: 50,
@@ -247,6 +248,11 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center'
     },
+    containerAddPicture: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 30,
+    }
 })
 
 export default AddJournalEntryScreen;
