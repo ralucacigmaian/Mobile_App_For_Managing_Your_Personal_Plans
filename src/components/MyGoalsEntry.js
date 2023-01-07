@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase/config'
 import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
 import { colors } from '../utils/colors';
-
+import * as Notification from 'expo-notifications';
 
 const setCategoryColor = (categoryName) =>{             //get different colours depending on category
     if (categoryName === 'Family')
@@ -49,6 +49,9 @@ const deleteMyGoal = () => {
           {
             text: "Yes",
             onPress: () => {
+                if (myGoal.value.reminder !== 'No'){
+                     Notification.cancelScheduledNotificationAsync(myGoal.value.reminder);                      //cancel notification if goal deleted
+                }
               firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
             setDeleted(!deleted)
             },
@@ -60,8 +63,6 @@ const deleteMyGoal = () => {
           },
         ]
       );
-    //firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
-    //setDeleted(!deleted)
 }
    
 return(

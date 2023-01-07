@@ -1,3 +1,4 @@
+import { useEffect} from 'react';
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import SignUpScreen from './src/screens/SignUpScreen';
@@ -9,6 +10,8 @@ import JournalingScreen from "./src/screens/JournalingScreen";
 import AddJournalEntryScreen from "./src/screens/AddJournalEntryScreen";
 import EditGoalScreen from "./src/screens/EditGoalScreen";
 import CameraScreen from "./src/screens/CameraScreen";
+import * as Notifications from "expo-notifications";
+
 
 const navigator = createStackNavigator({
   SignUp: SignUpScreen,
@@ -27,5 +30,6 @@ const navigator = createStackNavigator({
     headerShown: false
   }
 });
+
 
 export default createAppContainer(navigator);
