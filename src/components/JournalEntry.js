@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Modal } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
@@ -18,18 +18,36 @@ const setMoodColor = (mood) =>{             //get different colours depending on
     
 }
 
-const JournalEntry = ({key, journal}) => {
+const JournalEntry = ({journal}) => {
 
     
     const moodColorStyles = {
         backgroundColor: setMoodColor(journal.value.mood)
     };
 
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
         <View style={styles.container}>
             <View style={[styles.body,moodColorStyles]}>
                 <View style={styles.editOptions}>
-                    <TouchableOpacity>
+                    <Modal
+                        transparent={true}
+                        animationType='fade'
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                        style={styles.modal}
+                    >
+                        <View style={styles.containerModal}>
+                            <View style={styles.containerContentModal}>
+                                <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
+                                    <Text style={styles.textModal}>Your photo of the day!</Text>
+                                </TouchableOpacity>
+                                {/* <Image style={styles.preview} source={{ uri: "data:image/jpg;base64,"}} /> */}
+                            </View>
+                        </View>
+                    </Modal>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Entypo name="dots-three-vertical" size={17} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -84,7 +102,23 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '200',
         color: 'white'
-    }
+    },
+    containerModal: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.transparent,
+    },
+    containerContentModal: {
+        backgroundColor: 'white',
+        margin: 50,
+        padding: 20,
+        borderRadius: 8,
+    },
+    textModal: {
+        fontSize: 16,
+        color: colors.lightGray4
+    },
 })
 
 export default JournalEntry;
