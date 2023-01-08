@@ -11,6 +11,7 @@ import AddJournalEntryScreen from "./src/screens/AddJournalEntryScreen";
 import EditGoalScreen from "./src/screens/EditGoalScreen";
 import CameraScreen from "./src/screens/CameraScreen";
 import * as Notifications from "expo-notifications";
+import StatsScreen from './src/screens/StatsScreen';
 
 
 const navigator = createStackNavigator({
@@ -22,7 +23,8 @@ const navigator = createStackNavigator({
   Journaling: JournalingScreen,
   AddJournalEntry: AddJournalEntryScreen,
   EditGoal: EditGoalScreen,
-  Camera: CameraScreen
+  Camera: CameraScreen,
+  Stats: StatsScreen
 }, {
   initialRouteName: 'SignIn',
   defaultNavigationOptions : {
