@@ -9,11 +9,6 @@ import moment from 'moment'
 import { firebase } from '../firebase/config'
 import {
     LineChart,
-    BarChart,
-    PieChart,
-    ProgressChart,
-    ContributionGraph,
-    StackedBarChart
   } from "react-native-chart-kit";
 
   function* yLabel() {
@@ -25,6 +20,50 @@ const StatsScreen = ({navigation}) => {
     const yLabelIterator = yLabel();
     const [journal7Days, setJournal7Days] = useState([]);
     const [resultDates, setResultDates] = useState([])
+
+
+
+
+
+
+
+    const [myGoals, setMyGoals] = useState([]);
+    const getMyGoals = () => {
+     
+     
+      var goalsRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals")
+      goalsRef.once("value", function(snapshot) {
+        var myGoalsArray = []
+        
+        snapshot.forEach(function(item) {
+          var itemVal = item.val();
+            myGoalsArray.push(itemVal)      
+        }); 
+
+        setMyGoals(myGoalsArray);
+        
+      });
+    }
+
+    const getGoalsPerMonth = () =>{
+        var goalsMonth = []
+        for (let i = 0; i < 6; i++){
+            var no = 0;
+            myGoals.forEach((item)=>{
+               if(moment(item.date, "DD/MM/YYYY").toDate().getMonth() === i)
+                no = no + 1;
+            });
+           goalsMonth.push(no)
+                
+        }
+        return goalsMonth;
+    }
+    
+    getGoalsPerMonth();
+
+
+
+
 
     const getJournalLast7Days= () => {
         var resultDates = []
@@ -86,6 +125,13 @@ const StatsScreen = ({navigation}) => {
     const unsubscribe = navigation.addListener('didFocus', () => {
       console.log('In Navigation Add Listener Block');
       getJournalLast7Days();
+
+
+
+      getMyGoals();
+
+
+
     //return unsubscribe;
   })}, [navigation]);
 
@@ -147,7 +193,43 @@ const StatsScreen = ({navigation}) => {
       />
     </View>
                    
-   
+    <View>
+        <Text style={styles.textDailyGoals}>Number of goals over 6 months</Text>
+      <LineChart
+        data={{
+          labels:  ["January", "February", "March", "April", "May", "June"],
+          datasets: [
+            {
+              data: getGoalsPerMonth(),
+            }
+          ],
+        }}
+        segments={2}
+        width={Dimensions.get("window").width-20} // from react-native
+        height={200}
+        bezier
+        chartConfig={{
+            backgroundColor: "#CE615A",
+            backgroundGradientTo: "#CE615A",
+            backgroundGradientFrom: '#7d2729',
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            },
+            propsForDots: {
+              r: "6",
+              strokeWidth: "2",
+              stroke: "#755d5f"
+            }
+          }}
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}
+      />
+    </View>
                 </View>
             </KeyboardAwareScrollView>
             <Footer />
@@ -170,10 +252,10 @@ const styles = StyleSheet.create({
     textDailyGoals:{
         fontSize: 16,
         fontWeight: 'bold',
-        width: 250,
+        width: 300,
         height: 19,
         left: 10,
-        top: 5,
+        top: 1,
       },
   
    

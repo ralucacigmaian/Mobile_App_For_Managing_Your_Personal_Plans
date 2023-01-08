@@ -35,6 +35,9 @@ const DailyGoalEntry = ({key,dailyGoal, completed, setCompleted}) => {
     const categoryColorStyles = {
         backgroundColor: setCategoryColor(dailyGoal.value.category)
     };
+    const categoryTextSize = {
+        fontSize: dailyGoal.value.category === 'Personal growth' ? 6 : 10,
+    };
 
     const [checked, setChecked] = useState(false);
     const handleCheck = () =>{
@@ -61,7 +64,7 @@ return(
                     <Text style={styles.goalTitle}>{dailyGoal.value.title}</Text>
                 </View>
                 <View style={[styles.categoryContainer, categoryColorStyles]}>
-                    <Text style={styles.categoryText}>{dailyGoal.value.category.toUpperCase()}</Text>
+                    <Text style={[styles.categoryText, categoryTextSize]}>{dailyGoal.value.category.toUpperCase()}</Text>
                 </View>
             <View style={{paddingLeft:10, flexDirection:"row"}}>
                 <MyCheckbox onChange={() => handleCheck()} checked={checked} />
@@ -120,7 +123,8 @@ const styles = StyleSheet.create({
         borderRadius:100,
     },
     categoryText:{
-        fontSize:10,
+        //fontSize:10,
+        textAlign:"center",
         color:"white",
         fontWeight:"bold"
     },

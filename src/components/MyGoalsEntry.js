@@ -29,7 +29,7 @@ const MyGoalsEntry = ({navigation, myGoal, deleted, setDeleted}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const categoryTextSize = {
-        fontSize: myGoal.value.type === 'Personal growth' ? 8 : 10,
+        fontSize: myGoal.value.category === 'Personal growth' ? 6 : 10,
     };
 
     const categoryColorStyles = {
@@ -72,10 +72,10 @@ return(
                     <Text style={styles.goalTitle}>{myGoal.value.title}</Text>
                 </View>
                 <View style={[styles.categoryContainer, categoryColorStyles]}>
-                    <Text style={styles.categoryText}>{myGoal.value.category.toUpperCase()}</Text>
+                    <Text style={[styles.categoryText,categoryTextSize]}>{myGoal.value.category.toUpperCase()}</Text>
                 </View>
                 <View style={[styles.typeContainer, typeColorStyles]}>
-                    <Text style={styles.categoryText}>{myGoal.value.type.toUpperCase()}</Text>
+                    <Text style={styles.typeText}>{myGoal.value.type.toUpperCase()}</Text>
                 </View>
                 <View style={styles.containerActions}>
                     <View style={styles.details}>
@@ -193,6 +193,12 @@ const styles = StyleSheet.create({
         justifyContent:"center",
     },
     categoryText:{
+        //fontSize: 10,
+        textAlign:"center",
+        color:"white",
+        fontWeight:"bold"
+    },
+    typeText:{
         fontSize: 10,
         color:"white",
         fontWeight:"bold"
