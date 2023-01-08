@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Modal } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { firebase } from '../firebase/config'
 import { colors } from '../utils/colors';
 import { Entypo } from '@expo/vector-icons';
 
@@ -27,6 +26,20 @@ const JournalEntry = ({journal}) => {
 
     const [modalVisible, setModalVisible] = useState(false);
 
+
+    const [imageUrl, setImageUrl] = useState(undefined);
+
+    useEffect(() => {
+        firebase.storage()
+        .ref('users/' + firebase.auth().currentUser.uid).child("journal"+journal.value.date+".jpg") //name in storage in firebase console
+        .getDownloadURL()
+        .then((url) => {
+            setImageUrl(url);
+        })
+        .catch((e) => console.log('Errors while downloading => ', e));
+    }, []);
+
+
     return (
         <View style={styles.container}>
             <View style={[styles.body,moodColorStyles]}>
@@ -43,7 +56,7 @@ const JournalEntry = ({journal}) => {
                                 <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
                                     <Text style={styles.textModal}>Your photo of the day!</Text>
                                 </TouchableOpacity>
-                                {/* <Image style={styles.preview} source={{ uri: "data:image/jpg;base64,"}} /> */}
+                                {imageUrl!==undefined?<Image style={{height: 200, width: 200}} source={{uri: imageUrl}} />:<View></View>}
                             </View>
                         </View>
                     </Modal>

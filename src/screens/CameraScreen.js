@@ -76,7 +76,7 @@ export default function CameraScreen({navigation}) {
           xhr.send(null);
         });
     
-        const ref = firebase.storage().ref('users/' + firebase.auth().currentUser.uid).child("journal"+new Date().toDateString());
+        const ref = firebase.storage().ref('users/' + firebase.auth().currentUser.uid).child("journal"+new Date().toDateString()+".jpg");
         const snapshot = await ref.put(blob);
         blob.close();
     }
