@@ -24,7 +24,7 @@ Notification.setNotificationHandler({
 });
 const HomeScreen = ({navigation}) => {
 
-
+ // const [notificationID, setNotificationID] = useState('');
 //Exectute at the launch of app for ios
 useEffect(() => {
   Permissions.getAsync(Permissions.NOTIFICATIONS)
@@ -40,11 +40,14 @@ useEffect(() => {
       }
     });
 }, []);
+
 useEffect(() => {
+
   //When app is closed
   const backgroundSubscription = Notification.addNotificationResponseReceivedListener(response => {
     console.log(response);
   });
+
   //When the app is open
   const foregroundSubscription = Notification.addNotificationReceivedListener(notification => {
     console.log(notification);
@@ -56,6 +59,29 @@ useEffect(() => {
     foregroundSubscription.remove();
   }
 }, []);
+
+
+/*const scheduleDailyNotifications = async () => {
+  const settings = await Notification.getPermissionsAsync();
+  if (settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL ) {
+          // It's useful to save notification id so that you can edit/delete notification later
+          const idOfNotification = await Notification.scheduleNotificationAsync( {
+            content: {
+              title: "App Name - Daily Remainder",
+              body: "Text you want to show in your notification",
+              sound: 'default'
+            },
+            trigger: {
+              hour: 14, // show this notification every day, 14:00
+              repeats: true
+            },
+          } );
+        return
+    }
+  }
+*/
+
+
     const handleSignOut = () => {
       firebase
       .auth()
@@ -100,15 +126,14 @@ useEffect(() => {
     
 
     //get all daily goals from database
-    useEffect(() => {
-      const unsubscribe = navigation.addListener('didFocus', () => {
-        console.log('In Navigation Add Listener Block');
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('didFocus', () => {
+      console.log('In Navigation Add Listener Block');
         getDailyGoals();
       //return unsubscribe;
     })}, [navigation]);
 
     const [completed, setCompleted] = useState(0)
-   console.log(completed)
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
