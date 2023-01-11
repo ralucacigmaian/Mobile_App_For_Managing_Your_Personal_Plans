@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase/config'
 import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
 import { colors } from '../utils/colors';
-
+import * as Notification from 'expo-notifications';
 
 const setCategoryColor = (categoryName) =>{             //get different colours depending on category
     if (categoryName === 'Family')
@@ -29,7 +29,7 @@ const MyGoalsEntry = ({navigation, myGoal, deleted, setDeleted}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const categoryTextSize = {
-        fontSize: myGoal.value.type === 'Personal growth' ? 8 : 10,
+        fontSize: myGoal.value.category === 'Personal growth' ? 6 : 10,
     };
 
     const categoryColorStyles = {
@@ -49,6 +49,9 @@ const deleteMyGoal = () => {
           {
             text: "Yes",
             onPress: () => {
+                if (myGoal.value.reminder !== 'No'){
+                     Notification.cancelScheduledNotificationAsync(myGoal.value.reminder);                      //cancel notification if goal deleted
+                }
               firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
             setDeleted(!deleted)
             },
@@ -60,8 +63,6 @@ const deleteMyGoal = () => {
           },
         ]
       );
-    //firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals/"+myGoal.key).remove()
-    //setDeleted(!deleted)
 }
    
 return(
@@ -71,10 +72,10 @@ return(
                     <Text style={styles.goalTitle}>{myGoal.value.title}</Text>
                 </View>
                 <View style={[styles.categoryContainer, categoryColorStyles]}>
-                    <Text style={styles.categoryText}>{myGoal.value.category.toUpperCase()}</Text>
+                    <Text style={[styles.categoryText,categoryTextSize]}>{myGoal.value.category.toUpperCase()}</Text>
                 </View>
                 <View style={[styles.typeContainer, typeColorStyles]}>
-                    <Text style={styles.categoryText}>{myGoal.value.type.toUpperCase()}</Text>
+                    <Text style={styles.typeText}>{myGoal.value.type.toUpperCase()}</Text>
                 </View>
                 <View style={styles.containerActions}>
                     <View style={styles.details}>
@@ -88,8 +89,8 @@ return(
                             <View style={styles.containerModal}>
                                 <View style={styles.containerContentModal}>
                                     <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
-                                        {myGoal.value.reminder === "No" ? <Text>No reminder</Text> : <Text>Reminder</Text>}
-                                        <Text>This goal is due in {myGoal.value.date} at {myGoal.value.time}</Text>
+                                        {myGoal.value.reminder === "No" ? <Text>This goal won't send you a reminder</Text> : <Text>This goal will send you a reminder</Text>}
+                                        {myGoal.value.type === "Daily" ? <Text>This goal is due in {myGoal.value.date} at {myGoal.value.time}</Text> : null}
                                         {myGoal.value.description === "" ? null : <Text>Description: {myGoal.value.description}</Text>}
                                     </TouchableOpacity>
                                 </View>
@@ -192,6 +193,12 @@ const styles = StyleSheet.create({
         justifyContent:"center",
     },
     categoryText:{
+        //fontSize: 10,
+        textAlign:"center",
+        color:"white",
+        fontWeight:"bold"
+    },
+    typeText:{
         fontSize: 10,
         color:"white",
         fontWeight:"bold"

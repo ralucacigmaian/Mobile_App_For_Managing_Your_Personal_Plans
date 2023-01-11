@@ -1,13 +1,55 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { colors } from '../utils/colors';
 import JournalEntry from '../components/JournalEntry';
 import Footer from '../components/Footer';
+import { firebase } from '../firebase/config'
 
 const JournalingScreen = ({navigation}) => {
+
+    const [journals, setJournals] = useState([]);
+
+    const getJournals = () => {
+     
+     
+        var journalsRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/journals")
+        journalsRef.once("value", function(snapshot) {
+          var journalsArray = []
+          
+          snapshot.forEach(function(item) {
+            var itemVal = item.val();
+              journalsArray.push({"key":item.key, "value":itemVal})      
+          }); 
+  
+          setJournals(journalsArray);
+          
+        });
+      }
+
+    const handleAddJournalEntry = () =>{
+        var ok = 1;
+        journals.map((item)=>{
+            if (item.value.date === new Date().toDateString())
+                ok = 0;
+        })
+
+        if (ok === 0)
+            Alert.alert('Already added a journal entry for today!')
+        else 
+            navigation.navigate('AddJournalEntry')
+
+    }
+      useEffect(() => {
+        const unsubscribe = navigation.addListener('didFocus', () => {
+          console.log('In Navigation Add Listener Block');
+          getJournals();
+        //return unsubscribe;
+      })}, [navigation]);
+
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -25,15 +67,18 @@ const JournalingScreen = ({navigation}) => {
                     <View style={styles.containerButton}>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => navigation.navigate('AddJournalEntry')}
+                            onPress={() => handleAddJournalEntry()}
                         >
                             <Text style={styles.textButton}>How are you today?</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.containerJournalEntry}>
                         <Text style={styles.textJournalEntry}>Past journal entries</Text>
-                        <JournalEntry />
-                        <JournalEntry />
+                        {journals.map((item)=>{
+                        return(<JournalEntry key={item.key} journal={item} />)
+                    })}
+                        
+                       
                     </View>
                 </View>
             </KeyboardAwareScrollView>

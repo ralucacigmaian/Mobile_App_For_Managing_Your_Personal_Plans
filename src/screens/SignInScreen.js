@@ -82,9 +82,9 @@ const SignInScreen = ({navigation}) => {
                     <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                         <Text style={styles.textFooter}>Sign Up</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <Text style={styles.textFooter}>Forgot your password?</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </KeyboardAwareScrollView>
         </SafeAreaView>
@@ -163,6 +163,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingTop: 20,
         paddingHorizontal: 25,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     textFooter: {
         color: colors.lightGray4,

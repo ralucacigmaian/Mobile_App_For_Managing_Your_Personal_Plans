@@ -29,7 +29,7 @@ const Footer = ({navigation}) => {
                 </TouchableOpacity>
             </View>
             <View>
-                <TouchableOpacity style={styles.container}>
+                <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('Stats')}>
                     <AntDesign name="barschart" size={24} color={colors.lightGray4} />
                     <Text style={styles.text}>Statistics</Text>
                 </TouchableOpacity>

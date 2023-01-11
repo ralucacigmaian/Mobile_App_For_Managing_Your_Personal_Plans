@@ -11,6 +11,13 @@ import { EvilIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import { firebase } from '../firebase/config'
+import * as Notification from 'expo-notifications';
+import moment from 'moment'
+import * as Permissions from 'expo-permissions';
+import { USER_FACING_NOTIFICATIONS } from 'expo-permissions';
+
+
+
 
 const AddGoalScreen = ({navigation}) => {
 
@@ -39,14 +46,31 @@ const AddGoalScreen = ({navigation}) => {
         completed:0
       });
 
-      const handleAddGoal = () => {
+      const handleAddGoal = async () => {
         if(goal.title === '' ) {
             Alert.alert('Please enter a title for your goal!')
         }
         else{
+            var goalToAdd = goal;
             if (goal.type === 'Unlimited')
-                setGoal({...goal, date:'', time:''});
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goal);
+                //setGoal({...goal, date:'', time:''});
+                {
+                    goalToAdd.date = '';
+                    goalToAdd.time = '';
+                }
+            else if (goal.reminder === 'Yes') {             //schedule notification
+               const id = await Notification.scheduleNotificationAsync({
+                    content: {
+                      title: "Reminder",
+                      body: "Don't forget to "+ goalToAdd.title +" !"
+                    },
+                    trigger: {
+                      seconds:(Date.parse(moment(goal.date+' '+goal.time, "DD/MM/YYYY hh:mm").toDate()) - Date.now())*0.001
+                    }
+                  })
+                goalToAdd.reminder = id;
+            }
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/goals").push(goalToAdd);
             navigation.navigate('Home');
         }
 

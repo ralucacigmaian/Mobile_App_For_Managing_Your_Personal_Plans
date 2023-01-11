@@ -9,8 +9,79 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 import Footer from '../components/Footer';
 import { firebase } from '../firebase/config'
 import DailyGoalEntry from '../components/DailyGoalEntry';
+import * as Notification from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import { USER_FACING_NOTIFICATIONS } from 'expo-permissions';
 
+
+Notification.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true
+    };
+  }
+});
 const HomeScreen = ({navigation}) => {
+
+ // const [notificationID, setNotificationID] = useState('');
+//Exectute at the launch of app for ios
+useEffect(() => {
+  Permissions.getAsync(Permissions.NOTIFICATIONS)
+    .then((statusObj) => {
+      if (statusObj.status !== 'granted') {
+        return Permissions.askAsync(Permissions.NOTIFICATIONS);
+      }
+      return statusObj;
+    }).then(statusObj => {
+      if (statusObj.status !== 'granted') {
+        alert('Notifications will be unavailable now');
+        return;
+      }
+    });
+}, []);
+
+useEffect(() => {
+
+  //When app is closed
+  const backgroundSubscription = Notification.addNotificationResponseReceivedListener(response => {
+    console.log(response);
+  });
+
+  //When the app is open
+  const foregroundSubscription = Notification.addNotificationReceivedListener(notification => {
+    console.log(notification);
+  });
+
+  return () => {
+   
+    backgroundSubscription.remove();
+    foregroundSubscription.remove();
+  }
+}, []);
+
+
+/*const scheduleDailyNotifications = async () => {
+  const settings = await Notification.getPermissionsAsync();
+  if (settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL ) {
+          // It's useful to save notification id so that you can edit/delete notification later
+          const idOfNotification = await Notification.scheduleNotificationAsync( {
+            content: {
+              title: "App Name - Daily Remainder",
+              body: "Text you want to show in your notification",
+              sound: 'default'
+            },
+            trigger: {
+              hour: 14, // show this notification every day, 14:00
+              repeats: true
+            },
+          } );
+        return
+    }
+  }
+*/
+
+
     const handleSignOut = () => {
       firebase
       .auth()
@@ -55,15 +126,14 @@ const HomeScreen = ({navigation}) => {
     
 
     //get all daily goals from database
-    useEffect(() => {
-      const unsubscribe = navigation.addListener('didFocus', () => {
-        console.log('In Navigation Add Listener Block');
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('didFocus', () => {
+      console.log('In Navigation Add Listener Block');
         getDailyGoals();
       //return unsubscribe;
     })}, [navigation]);
 
     const [completed, setCompleted] = useState(0)
-   console.log(completed)
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>

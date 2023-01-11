@@ -1,16 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useCallback } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { colors } from '../utils/colors';
 import { EvilIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
+import { firebase } from '../firebase/config';
 
 const AddJournalEntryScreen = ({navigation}) => {
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [journalEntry, setJournalEntry] = useState({
+        description:'',
+        date:new Date().toDateString(),
+        mood:0
+    })
 
+    const handleAddJournalEntry = () =>{
+        if(journalEntry.description === '' )
+        {
+            Alert.alert('Please write something in your journal!')
+        }
+        else
+        {
+            setJournalEntry({...journalEntry, date:new Date().toDateString()});
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + "/journals").push(journalEntry);
+            navigation.navigate('Journaling');
+        }
+    }
+    
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <KeyboardAwareScrollView style={styles.containerScreen}>
@@ -36,6 +55,8 @@ const AddJournalEntryScreen = ({navigation}) => {
                             autoFocus={true}
                             multiline={true}
                             numberOfLines={1}
+                            value={journalEntry.description}
+                            onChangeText={(text) => setJournalEntry({...journalEntry, description: text})}
                         />
                     </View>
                     <View style={styles.containerQuestion}>
@@ -59,6 +80,13 @@ const AddJournalEntryScreen = ({navigation}) => {
                         </TouchableOpacity>
                         <Text style={styles.question}>What do I write in a journal?</Text>
                     </View>
+
+                    <View style={styles.containerAddPicture}>
+                    <TouchableOpacity style={styles.buttonPicture} onPress = {() => navigation.navigate('Camera')}>
+                        <Text style={styles.textButtonPicture}>Take a picture</Text>
+                    </TouchableOpacity>
+                    </View>
+
                     <View style={styles.containerScroll}>
                         <View style={styles.textScroll}>
                             <Text style={styles.questionScroll}>What was your overall mood today?</Text>
@@ -76,13 +104,15 @@ const AddJournalEntryScreen = ({navigation}) => {
                                 minimumTrackTintColor={colors.red}
                                 maximumTrackTintColor={colors.lightGray4}
                                 step={1}
+                                value={journalEntry.mood}
+                                onValueChange={(value) => setJournalEntry({...journalEntry, mood: value})}
                             />
                             
                         </View>
                     </View>
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress = {() => handleAddJournalEntry()}>
                         <Text style={styles.textButton}>Add</Text>
                     </TouchableOpacity>
                 </View>
@@ -122,7 +152,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     textInput: {
-        height: 427,
+        height: 345,
         width: 343,
         fontSize: 16,
         backgroundColor: colors.lightGray,
@@ -162,7 +192,7 @@ const styles = StyleSheet.create({
     containerScroll: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 30
+        paddingTop: 10
     },
     questionScroll: {
         fontSize: 16,
@@ -184,7 +214,7 @@ const styles = StyleSheet.create({
     footer: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 50
+        paddingTop: 70
     },
     button: {
         height: 50,
@@ -202,6 +232,27 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center'
     },
+    buttonPicture: {
+        height: 50,
+        width: 150,
+        backgroundColor: colors.red,
+        borderRadius: 100,
+        paddingTop: 16,
+        paddingBottom: 16,
+        paddingLeft: 14,
+        paddingRight: 14,
+    },
+    textButtonPicture: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'center'
+    },
+    containerAddPicture: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 30,
+    }
 })
 
 export default AddJournalEntryScreen;

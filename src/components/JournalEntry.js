@@ -1,25 +1,74 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Text, View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Modal } from 'react-native';
+import { firebase } from '../firebase/config'
 import { colors } from '../utils/colors';
 import { Entypo } from '@expo/vector-icons';
 
-const JournalEntry = () => {
+const setMoodColor = (mood) =>{             //get different colours depending on category
+    if (mood === 0)
+        return '#CE615A'
+    //if (categoryName === 'Fun')
+        //return '#506970'
+    if (mood === 1)
+        return '#FFCF8D'
+    if (mood === 2)
+    return '#7FBBB3'
+    
+}
+
+const JournalEntry = ({journal}) => {
+
+    
+    const moodColorStyles = {
+        backgroundColor: setMoodColor(journal.value.mood)
+    };
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+
+    const [imageUrl, setImageUrl] = useState(undefined);
+
+    useEffect(() => {
+        firebase.storage()
+        .ref('users/' + firebase.auth().currentUser.uid).child("journal"+journal.value.date+".jpg") //name in storage in firebase console
+        .getDownloadURL()
+        .then((url) => {
+            setImageUrl(url);
+        })
+        .catch((e) => console.log('Errors while downloading => ', e));
+    }, []);
+
+
     return (
         <View style={styles.container}>
-            <View style={styles.body}>
+            <View style={[styles.body,moodColorStyles]}>
                 <View style={styles.editOptions}>
-                    <TouchableOpacity>
+                    <Modal
+                        transparent={true}
+                        animationType='fade'
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                        style={styles.modal}
+                    >
+                        <View style={styles.containerModal}>
+                            <View style={styles.containerContentModal}>
+                                <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
+                                    <Text style={styles.textModal}>Your photo of the day!</Text>
+                                </TouchableOpacity>
+                                {imageUrl!==undefined?<Image style={{height: 200, width: 200}} source={{uri: imageUrl}} />:<View></View>}
+                            </View>
+                        </View>
+                    </Modal>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Entypo name="dots-three-vertical" size={17} color="white" />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.containerText}>
-                    <Text style={styles.textInput}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam consectetur et est et rhoncus. Duis tristique ipsum a magna blandit, eu condimentum augue pretium.</Text>
+                    <Text style={styles.textInput}>{journal.value.description.slice(0,145)}{journal.value.description.length > 145 ? '...' : ''}</Text>
                 </View>
                 <View style={styles.containerDate}>
-                    <Text style={styles.textDate}>Added on 6 Nov. 2022</Text>
+                    <Text style={styles.textDate}>Added on {journal.value.date}</Text>
                 </View>
             </View>
         </View>
@@ -59,13 +108,33 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         paddingTop: 15,
-        paddingRight: 2
+        paddingRight: 5,
+        flex: 1
     },
     textDate: {
         fontSize: 15,
         fontWeight: '200',
         color: 'white'
-    }
+    },
+    containerModal: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.transparent,
+    },
+    containerContentModal: {
+        backgroundColor: 'white',
+        margin: 50,
+        padding: 20,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    textModal: {
+        fontSize: 16,
+        color: colors.lightGray4,
+        paddingBottom: 10
+    },
 })
 
 export default JournalEntry;
