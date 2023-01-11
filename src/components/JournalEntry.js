@@ -68,7 +68,7 @@ const JournalEntry = ({journal}) => {
                     <Text style={styles.textInput}>{journal.value.description.slice(0,145)}{journal.value.description.length > 145 ? '...' : ''}</Text>
                 </View>
                 <View style={styles.containerDate}>
-                    <Text style={styles.textDate}>Added on {journal.value.date}.</Text>
+                    <Text style={styles.textDate}>Added on {journal.value.date}</Text>
                 </View>
             </View>
         </View>
@@ -127,10 +127,13 @@ const styles = StyleSheet.create({
         margin: 50,
         padding: 20,
         borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     textModal: {
         fontSize: 16,
-        color: colors.lightGray4
+        color: colors.lightGray4,
+        paddingBottom: 10
     },
 })
 

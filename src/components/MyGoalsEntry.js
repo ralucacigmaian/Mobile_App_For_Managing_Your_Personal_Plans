@@ -89,8 +89,8 @@ return(
                             <View style={styles.containerModal}>
                                 <View style={styles.containerContentModal}>
                                     <TouchableOpacity onPress={()=> setModalVisible(false)} activeOpacity={1}>
-                                        {myGoal.value.reminder === "No" ? <Text>No reminder</Text> : <Text>Reminder</Text>}
-                                        <Text>This goal is due in {myGoal.value.date} at {myGoal.value.time}</Text>
+                                        {myGoal.value.reminder === "No" ? <Text>This goal won't send you a reminder</Text> : <Text>This goal will send you a reminder</Text>}
+                                        {myGoal.value.type === "Daily" ? <Text>This goal is due in {myGoal.value.date} at {myGoal.value.time}</Text> : null}
                                         {myGoal.value.description === "" ? null : <Text>Description: {myGoal.value.description}</Text>}
                                     </TouchableOpacity>
                                 </View>
